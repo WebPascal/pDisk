@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title data-i18n="app.title">pDisk 云盘</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container" id="app">
+
+<!-- SVG Icons Sprite -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+  <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    <polyline points="9 22 9 12 15 12 15 22"/>
+  </symbol>
+  <symbol id="icon-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+  </symbol>
+  <symbol id="icon-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/>
+  </symbol>
+  <symbol id="icon-person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </symbol>
+  <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82V15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </symbol>
+  <symbol id="icon-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <polyline points="16 17 21 12 16 7"/>
+    <line x1="21" y1="12" x2="9" y2="12"/>
+  </symbol>
+  <symbol id="icon-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.778zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+  </symbol>
+  <symbol id="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="12" y1="19" x2="12" y2="5"/>
+    <polyline points="5 12 12 5 19 12"/>
+  </symbol>
+  <symbol id="icon-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+    <line x1="8" y1="12" x2="16" y2="12"/>
+    <line x1="8" y1="16" x2="16" y2="16"/>
+  </symbol>
+  <symbol id="icon-cloud-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 12a3 3 0 0 1 0-6 4 4 0 0 1 7.5-1.5A3.5 3.5 0 0 1 18 8a3 3 0 0 1 0 6H6z"/>
+    <rect x="4" y="14" width="16" height="7" rx="1.5"/>
+    <line x1="7" y1="17.5" x2="12" y2="17.5"/>
+    <circle cx="15" cy="17.5" r="1"/>
+  </symbol>
+  <symbol id="icon-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+  </symbol>
+  <symbol id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+  </symbol>
+  <symbol id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+  </symbol>
+  <symbol id="icon-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+  <symbol id="icon-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></symbol>
+  <symbol id="icon-stop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></symbol>
+  <symbol id="icon-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="icon-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  <symbol id="icon-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></symbol>
+  <symbol id="icon-volume" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></symbol>
+  <symbol id="icon-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></symbol>
+  <symbol id="icon-share-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></symbol>
+  <symbol id="icon-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
+  <symbol id="icon-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+</svg>
+
+<!-- Top Bar -->
+<div class="top-bar" id="topBar">
+  <span class="page-title" id="pageTitle" data-i18n="app.title">pDisk</span>
+  <div class="top-bar-right">
+    <div class="traffic-indicator" id="trafficIndicator">
+      <svg class="icon icon-xs upload-icon"><use href="#icon-upload"/></svg>
+      <span class="traffic-rate up-rate" id="upRate">--</span>
+      <svg class="icon icon-xs download-icon"><use href="#icon-download"/></svg>
+      <span class="traffic-rate down-rate" id="downRate">--</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Login ===== -->
+<div class="page active" id="page-login">
+  <div class="login-box">
+    <div class="app-title" data-i18n="app.title">pDisk 云盘</div>
+    <div class="app-subtitle" data-i18n="app.subtitle">安全 · 高速 · 便捷的云存储服务</div>
+
+    <div class="tab-bar" id="loginTabs" style="display:none;">
+      <div class="tab-item active" data-tab="login" data-i18n="login.tab">登录</div>
+      <div class="tab-item" data-tab="register" data-i18n="register.tab">注册</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="form-login" style="display:none;">
+      <div class="form-group">
+        <label data-i18n="login.username">用户名</label>
+        <input class="form-input" id="loginUsername" placeholder="" autocomplete="username" data-i18n-placeholder="login.usernamePlaceholder">
+      </div>
+      <div class="form-group">
+        <label data-i18n="login.password">密码</label>
+        <div class="pwd-input-wrap">
+        <input class="form-input" id="loginPassword" type="password" placeholder="" autocomplete="current-password" data-i18n-placeholder="login.passwordPlaceholder">
+        <span class="pwd-toggle" onclick="toggleFieldVis('loginPassword')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="loginBtn" data-i18n="login.btn">登录</button>
+      <div class="form-footer">
+        <span class="forgot-link" id="forgotLink" data-i18n="login.forgot">忘记密码?</span>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="form-register" style="display:none;">
+      <div class="form-group">
+        <label data-i18n="login.username">用户名</label>
+        <input class="form-input" id="regUsername" placeholder="" data-i18n-placeholder="login.usernamePlaceholder">
+      </div>
+      <div class="form-group">
+        <label data-i18n="login.email">邮箱</label>
+        <input class="form-input" id="regEmail" type="email" placeholder="" data-i18n-placeholder="login.emailPlaceholder">
+      </div>
+      <div class="form-group">
+        <label data-i18n="login.nickname">昵称</label>
+        <input class="form-input" id="regNickname" placeholder="" data-i18n-placeholder="login.nicknamePlaceholder">
+      </div>
+      <div class="form-group">
+        <label data-i18n="login.password">密码</label>
+        <div class="pwd-input-wrap">
+        <input class="form-input" id="regPassword" type="password" placeholder="" data-i18n-placeholder="login.passwordPlaceholder">
+        <span class="pwd-toggle" onclick="toggleFieldVis('regPassword')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label data-i18n="login.confirmPwd">确认密码</label>
+        <div class="pwd-input-wrap">
+        <input class="form-input" id="regConfirmPwd" type="password" placeholder="" data-i18n-placeholder="login.confirmPwdPlaceholder">
+        <span class="pwd-toggle" onclick="toggleFieldVis('regConfirmPwd')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="registerBtn" data-i18n="register.btn">注册</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Home (Upload) ===== -->
+<div class="page" id="page-home">
+  <div class="card">
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon"><svg class="icon icon-lg"><use href="#icon-cloud-upload"/></svg></div>
+      <div class="upload-text" data-i18n="upload.clickOrDrag">点击选择文件 或 拖拽文件到此处</div>
+      <div class="upload-hint" data-i18n="upload.supportedFormats">支持任意格式文件，可多选</div>
+      <input type="file" id="fileInput" style="display:none" multiple>
+      <div class="upload-queue" id="uploadQueue"></div>
+      <div class="upload-summary" id="uploadSummary"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="flex-between mb-8">
+      <h3 style="font-size:15px;"><svg class="icon" style="vertical-align:middle;margin-right:4px;"><use href="#icon-clock"/></svg> <span data-i18n="recent.title">最近上传</span></h3>
+    </div>
+    <div id="recentFiles"><div class="empty-state" data-i18n="recent.empty">暂无上传记录</div></div>
+  </div>
+
+  <div class="card">
+    <div class="flex-between mb-8">
+      <h3 style="font-size:15px;"><svg class="icon" style="vertical-align:middle;margin-right:4px;"><use href="#icon-share"/></svg> <span data-i18n="share.myShares">我的分享</span></h3>
+    </div>
+    <div id="mySharesList"><div class="empty-state" data-i18n="share.empty">暂无分享</div></div>
+  </div>
+</div>
+
+<!-- ===== Page: Files ===== -->
+<div class="page" id="page-files">
+  <div class="card">
+    <div class="flex-between mb-8 files-top-bar">
+      <div class="breadcrumb" id="breadcrumb"></div>
+      <div class="select-all-row">
+        <span class="batch-count" id="batchCount" data-i18n="files.selectedNone" style="display:none;">已选 0 项</span>
+        <label class="select-all-label" id="selectAllLabel" style="display:none">
+          <input type="checkbox" id="selectAllCb" onchange="toggleSelectAll()"> <span data-i18n="files.selectAll">全选</span>
+        </label>
+        <div class="batch-actions-row" id="batchActionsRow" style="display:none;">
+          <button class="btn btn-sm btn-outline" onclick="batchCopy()" data-i18n="files.copy">复制</button>
+          <button class="btn btn-sm btn-danger" onclick="batchDelete()" data-i18n="files.delete">删除</button>
+          <button class="btn btn-sm btn-success" id="batchPlayBtn" onclick="batchPlay()" data-i18n="files.play">播放</button>
+          <button class="btn btn-sm file-btn-orange" onclick="batchDownload()" data-i18n="files.download">下载</button>
+          <button class="btn btn-sm btn-primary" onclick="batchShare()" data-i18n="files.share">分享</button>
+        </div>
+      </div>
+    </div>
+    <div class="file-sort-bar">
+      <span class="file-sort-label" data-i18n="files.sortBy">排序</span>
+      <select class="file-sort-select" id="fileSortBy" onchange="onFileSortChange()">
+        <option value="name" data-i18n="files.sortName">按名称</option>
+        <option value="time" data-i18n="files.sortTime">按时间</option>
+      </select>
+      <select class="file-sort-select" id="fileSortOrder" onchange="onFileSortChange()">
+        <option value="asc" data-i18n="files.sortAsc">升序</option>
+        <option value="desc" data-i18n="files.sortDesc">降序</option>
+      </select>
+    </div>
+    <div id="fileListContainer"><div class="loading" data-i18n="files.loading">加载中</div></div>
+    <div class="flex gap-8 mt-12">
+      <button class="btn btn-outline btn-sm" id="createDirBtn"><svg class="icon" style="vertical-align:middle;margin-right:2px;"><use href="#icon-folder"/></svg> <span data-i18n="files.createDir">创建目录</span></button>
+      <button class="btn btn-outline btn-sm" id="goBackBtn"><svg class="icon" style="vertical-align:middle;margin-right:2px;"><use href="#icon-arrow-up"/></svg> <span data-i18n="files.goUp">返回上级</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Profile ===== -->
+<div class="page" id="page-profile">
+  <div class="card">
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar">U</div>
+      <div class="profile-name" id="profileName" data-i18n="profile.user">用户</div>
+      <div class="profile-nickname" id="profileNickname">@nickname</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="disk-usage">
+      <div class="disk-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fill" id="diskRingFill" cx="60" cy="60" r="52" stroke-dasharray="0 326.7"/>
+        </svg>
+        <div class="ring-text" id="diskPercentText">0%</div>
+      </div>
+      <div class="disk-stats">
+        <div class="disk-stat">
+          <div class="stat-value" id="diskUsed">0 B</div>
+          <div class="stat-label" data-i18n="disk.used">已用</div>
+        </div>
+        <div class="disk-stat">
+          <div class="stat-value" id="diskTotal">0 B</div>
+          <div class="stat-label" data-i18n="disk.total">总量</div>
+        </div>
+        <div class="disk-stat">
+          <div class="stat-value" id="diskFree">0 B</div>
+          <div class="stat-label" data-i18n="disk.free">剩余</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="flex-between" style="align-items:flex-start;">
+      <div style="flex:1;">
+        <div class="form-group">
+          <label data-i18n="profile.username">用户名</label>
+          <div id="profileUsername">-</div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="profile.email">邮箱</label>
+          <div id="profileEmail">-</div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label data-i18n="profile.role">角色</label>
+          <div id="profileRole">-</div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="showChangePwdDialog()" style="flex-shrink:0;margin-top:4px;" data-i18n="profile.changePwd">修改密码</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Admin ===== -->
+<div class="page" id="page-admin">
+  <div class="admin-sub-tabs" id="adminSubTabs">
+    <div class="admin-sub-tab active" data-sub="users" data-i18n="admin.users">用户管理</div>
+    <div class="admin-sub-tab" data-sub="reset-pwd" data-i18n="admin.resetPwd">重置密码</div>
+    <div class="admin-sub-tab" data-sub="user-files" data-i18n="admin.userFiles">用户文件</div>
+    <div class="admin-sub-tab" data-sub="shares" data-i18n="admin.shares">分享管理</div>
+  </div>
+
+  <!-- Admin: User Management -->
+  <div class="admin-sub-page active" id="admin-users">
+    <div class="card mb-16">
+      <h3 style="font-size:15px;margin-bottom:12px;" data-i18n="settings.globalConfig">全局配置</h3>
+      <div style="display:flex;gap:48px;align-items:flex-start;">
+        <div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label data-i18n="settings.allowRegistration">允许注册</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="cursor:pointer;display:flex;align-items:center;gap:8px;margin:0;">
+              <input type="checkbox" id="allowRegSwitch" style="width:18px;height:18px;accent-color:#3b82f6;cursor:pointer;">
+              <span style="font-size:14px;color:#374151;" data-i18n="settings.allowRegistration">允许注册</span>
+            </label>
+          </div>
+        </div>
+        <div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label data-i18n="settings.defaultQuota">默认配额</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" id="defaultQuotaInput" class="form-input" style="width:88px;" placeholder="10" min="1" step="1">
+            <span style="font-size:14px;color:#374151;" data-i18n="settings.quotaUnit">GB</span>
+            <button class="btn btn-sm btn-primary" onclick="applyDefaultQuota()" data-i18n="settings.apply">应用</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="adminUserList">
+      <div class="flex-between mb-8">
+        <h3 style="font-size:15px;" data-i18n="admin.userList">用户列表</h3>
+        <button class="btn btn-sm btn-primary" onclick="syncDiskUsage()" data-i18n="admin.syncDisk">校准磁盘</button>
+      </div>
+      <div id="adminUserContainer"><div class="loading" data-i18n="files.loading">加载中</div></div>
+    </div>
+  </div>
+
+  <!-- Admin: Reset Password -->
+  <div class="admin-sub-page" id="admin-reset-pwd">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:8px;" data-i18n="admin.resetRequests">密码重置请求</h3>
+      <div id="resetPwdList"><div class="loading" data-i18n="files.loading">加载中</div></div>
+    </div>
+  </div>
+
+  <!-- Admin: User Files -->
+  <div class="admin-sub-page" id="admin-user-files">
+    <div class="card">
+      <div class="form-group">
+        <label data-i18n="admin.selectUser">选择用户</label>
+        <select class="form-input" id="adminFileUser"></select>
+      </div>
+      <button class="btn btn-primary btn-sm btn-block" id="adminBrowseBtn" data-i18n="admin.browseFiles">浏览文件</button>
+      <div class="flex-between admin-files-top-bar" style="margin-top:12px;">
+        <div class="breadcrumb" id="adminFileBreadcrumb"></div>
+        <div class="select-all-row">
+          <span class="batch-count" id="adminBatchCount" data-i18n="files.selectedNone" style="display:none;">已选 0 项</span>
+          <label class="select-all-label" id="adminSelectAllLabel" style="display:none">
+            <input type="checkbox" id="adminSelectAllCb" onchange="adminToggleSelectAll()"> <span data-i18n="files.selectAll">全选</span>
+          </label>
+          <div class="batch-actions-row" id="adminBatchActionsRow" style="display:none;">
+            <button class="btn btn-sm btn-danger" onclick="adminBatchDelete()" data-i18n="files.delete">删除</button>
+            <button class="btn btn-sm btn-success" id="adminBatchPlayBtn" onclick="adminBatchPlay()" data-i18n="files.play">播放</button>
+            <button class="btn btn-sm file-btn-orange" onclick="adminBatchDownload()" data-i18n="files.download">下载</button>
+          </div>
+        </div>
+      </div>
+      <div class="file-sort-bar">
+        <span class="file-sort-label" data-i18n="files.sortBy">排序</span>
+        <select class="file-sort-select" id="adminSortBy" onchange="onAdminSortChange()">
+          <option value="name" data-i18n="files.sortName">按名称</option>
+          <option value="time" data-i18n="files.sortTime">按时间</option>
+        </select>
+        <select class="file-sort-select" id="adminSortOrder" onchange="onAdminSortChange()">
+          <option value="asc" data-i18n="files.sortAsc">升序</option>
+          <option value="desc" data-i18n="files.sortDesc">降序</option>
+        </select>
+      </div>
+      <div id="adminFileList" style="margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <!-- Admin: Share Management -->
+  <div class="admin-sub-page" id="admin-shares">
+    <div class="card">
+      <h3 style="font-size:15px;margin-bottom:8px;" data-i18n="admin.shareList">分享记录</h3>
+      <div id="adminShareList"><div class="loading" data-i18n="files.loading">加载中</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Bottom Navigation ===== -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item" data-page="home">
+    <span class="nav-icon"><svg class="icon"><use href="#icon-home"/></svg></span>
+    <span class="nav-label" data-i18n="nav.home">首页</span>
+  </div>
+  <div class="nav-item" data-page="files">
+    <span class="nav-icon"><svg class="icon"><use href="#icon-folder"/></svg></span>
+    <span class="nav-label" data-i18n="nav.files">文件</span>
+  </div>
+  <div class="nav-item" data-page="profile">
+    <span class="nav-icon"><svg class="icon"><use href="#icon-person"/></svg></span>
+    <span class="nav-label" data-i18n="nav.profile">我的</span>
+  </div>
+  <div class="nav-item hidden" data-page="admin" id="navAdmin">
+    <span class="nav-icon"><svg class="icon"><use href="#icon-settings"/></svg></span>
+    <span class="nav-label" data-i18n="nav.admin">管理</span>
+  </div>
+  <div class="nav-item" data-page="logout">
+    <span class="nav-icon"><svg class="icon"><use href="#icon-logout"/></svg></span>
+    <span class="nav-label" data-i18n="nav.logout">退出</span>
+  </div>
+</div>
+
+</div><!-- /app-container -->
+
+<!-- 悬浮上传按钮（位于 body 层，可拖动；用于在任意页面快速打开上传对话框） -->
+<button id="uploadFab" onclick="toggleUploadDialog()" title="upload.fab.label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 8 1 0 3 16.07"/></svg><span id="uploadFabBadge" class="upload-fab-badge" style="display:none;"></span></button>
+
+<!-- 悬浮分享按钮（位于 body 层，确保可拖动且不被其他元素遮挡） -->
+<button id="shareFab" onclick="openShareDialog()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+
+<!-- 常驻上传对话框（与音频播放器同样模式：DOM 常驻、仅切换 display，显示/隐藏不中断进行中的上传） -->
+<div class="upload-dialog-overlay" id="uploadDialogOverlay" style="display:none;">
+  <div class="upload-dialog">
+    <div class="share-dialog-header">
+      <div class="share-dialog-title" data-i18n="upload.dialog.title">上传</div>
+      <span class="share-dialog-close" onclick="toggleUploadDialog(false)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+    </div>
+    <div class="share-dialog-body">
+      <div class="upload-dialog-hint" id="uploadDialogHint"></div>
+      <div class="upload-area upload-dialog-area" id="uploadDialogArea">
+        <div class="upload-icon"><svg class="icon icon-lg"><use href="#icon-cloud-upload"/></svg></div>
+        <div class="upload-text" data-i18n="upload.clickOrDrag">点击选择文件 或 拖拽文件到此处</div>
+        <div class="upload-hint" data-i18n="upload.supportedFormats">支持任意格式文件，可多选</div>
+        <input type="file" id="uploadDialogFileInput" style="display:none" multiple>
+        <div class="upload-queue" id="uploadDialogQueue"></div>
+        <div class="upload-summary" id="uploadDialogSummary"></div>
+      </div>
+    </div>
+    <div class="share-dialog-footer">
+      <button class="btn btn-outline btn-sm" onclick="toggleUploadDialog(false)" data-i18n="btn.close">关闭</button>
+    </div>
+  </div>
+</div>
+
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button>
+
+<!-- 音频播放器（移到 body 层，避免分享页面层级覆盖） -->
+<div class="audio-player" id="audioPlayer">
+  <div class="ap-header" id="apHeader">
+    <span class="ap-title" id="apTitle">-</span>
+    <span class="ap-minimize" onclick="audioPlayerMinimize()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+    <span class="ap-close" onclick="audioPlayerClose()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+  </div>
+  <div class="ap-controls">
+    <span class="ap-btn" id="apPlayBtn" onclick="audioPlayerToggle()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+    <span class="ap-btn ap-btn-danger" onclick="audioPlayerStop()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></span>
+    <div class="ap-progress-wrap">
+      <div class="ap-progress-bar" id="apProgressBar">
+      <div class="ap-progress-fill" id="apProgressFill"></div>
+    </div>
+      <span class="ap-time" id="apTime">0:00 / 0:00</span>
+    </div>
+  </div>
+  <div class="ap-extra">
+    <span class="ap-btn ap-btn-prev" onclick="audioPlayerPrev()" title=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></span>
+    <span class="ap-btn ap-btn-next" onclick="audioPlayerNext()" title=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></span>
+    <span class="ap-btn ap-btn-mode" id="apModeBtn" onclick="audioPlayerCycleMode()" title=""><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span>
+    <label class="ap-skip8" id="apSkip8Label"><input type="checkbox" id="apSkip8Cb" onchange="audioPlayerUpdateSkip8()"> <span data-i18n="player.skip8">首尾跳过8秒</span></label>
+  </div>
+</div>
+
+<div class="ap-minimized-icon" id="apMinimizedIcon" onclick="audioPlayerRestore()">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+</div>
+
+<!-- ===== Share View Page (hidden by default) ===== -->
+<div id="shareViewPage" class="share-view-page" style="display:none;">
+  <!-- Share page traffic indicator -->
+  <div class="share-top-bar">
+    <div class="share-title" id="svTitle">-</div>
+    <div class="share-traffic" id="shareTrafficIndicator">
+      <svg class="icon icon-xs upload-icon"><use href="#icon-upload"/></svg>
+      <span class="traffic-rate up-rate" id="svUpRate">--</span>
+      <svg class="icon icon-xs download-icon"><use href="#icon-download"/></svg>
+      <span class="traffic-rate down-rate" id="svDownRate">--</span>
+    </div>
+  </div>
+  <div class="share-view-box">
+    <div class="share-view-meta" id="svMeta">-</div>
+    <div class="share-view-hint" id="svHint" data-i18n="share.copyHint">点击链接或下载按钮复制/下载文件</div>
+    <div class="share-view-pwd-wrap">
+      <input class="share-input" id="svPwdInput" maxlength="5" data-i18n-placeholder="share.pwdPlaceholder" placeholder="">
+      <button class="btn btn-primary btn-sm" id="svPwdBtn" data-i18n="share.unlock">解锁</button>
+    </div>
+    <div class="file-sort-bar" id="svSortBar" style="display:none;">
+      <span class="file-sort-label" data-i18n="files.sortBy">排序</span>
+      <select class="file-sort-select" id="svSortBy" onchange="onShareSortChange()">
+        <option value="name" data-i18n="files.sortName">按名称</option>
+        <option value="time" data-i18n="files.sortTime">按时间</option>
+      </select>
+      <select class="file-sort-select" id="svSortOrder" onchange="onShareSortChange()">
+        <option value="asc" data-i18n="files.sortAsc">升序</option>
+        <option value="desc" data-i18n="files.sortDesc">降序</option>
+      </select>
+      <div class="share-view-right-controls">
+          <button class="btn btn-sm btn-success" id="svFloatPlay" style="display:none;" onclick="shareBatchPlay()" data-i18n="files.play">播放</button>
+          <button class="btn btn-sm file-btn-orange" id="svFloatDownload" style="display:none;" onclick="shareBatchDownload()" data-i18n="files.download">下载</button>
+        <label class="select-all-label" id="svSelectAllLabel" style="display:none">
+          <input type="checkbox" id="svSelectAllCb" onchange="toggleShareSelectAll()"> <span data-i18n="files.selectAll">全选</span>
+        </label>
+      </div>
+    </div>
+    <ul class="share-view-file-list" id="svFileList"></ul>
+    <div class="share-view-footer"><a href="https://webpascal.com" target="_blank" rel="noopener noreferrer">Powered by WebPascal.com</a></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxviewjs/dist/PptxViewJS.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
