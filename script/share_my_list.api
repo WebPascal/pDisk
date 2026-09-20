@@ -1,0 +1,35 @@
+include('/conn.cfg');
+include('/verify_token.api');
+
+try
+  var username := ReadGlobalVar('_username');
+  var isAdmin := StrToInt(ReadGlobalVar('_isAdmin'));
+
+  var res := json.parse(db.query('mydb', 'SELECT FShareID, FTitle, FPassword, FFiles, FCreateTime FROM tShares WHERE FUsername=:p1 ORDER BY FID DESC', username));
+  var ret := json.NewObject;
+  ret.code := 200;
+  if (res.code = 200) then
+  begin
+    var arr := json.NewArray;
+    for var i := 0 to res.data.length() - 1 do
+    begin
+      var item := json.NewObject;
+      item.FShareID := res.data[i].FShareID;
+      item.FTitle := res.data[i].FTitle;
+      item.FPassword := res.data[i].FPassword;
+      item.FFilesCount := json.parse(res.data[i].FFiles).length();
+      item.FCreateTime := res.data[i].FCreateTime;
+      arr[i] := item;
+    end;
+    ret.data := arr;
+  end
+  else
+  begin
+    ret.data := json.NewArray;
+  end;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

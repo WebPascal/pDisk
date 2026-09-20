@@ -1,0 +1,100 @@
+include('/conn.cfg');
+
+try
+  // 验证 token
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  var path := URLEncode.Decode(request.Params['path'], false);
+  var targetDir := URLEncode.Decode(request.Params['targetDir'], false);
+
+  // 验证参数
+  if (path = '') or (targetDir = '') then
+  begin
+    writeln('{"code":400,"msg":"api.paramIncomplete"}');
+    exit;
+  end;
+
+  // 确保路径以 /up/ 开头
+  if Pos('/up/', path) <> 1 then
+    path := '/up/' + path;
+  if Pos('/up/', targetDir) <> 1 then
+    targetDir := '/up/' + targetDir;
+
+  // 验证源文件路径属于当前用户
+  var userPrefix := '/up/' + username + '/';
+  if Pos(userPrefix, path) <> 1 then
+  begin
+    writeln('{"code":400,"msg":"file.noPermission"}');
+    exit;
+  end;
+
+  // 验证目标目录属于当前用户
+  if Pos(userPrefix, targetDir) <> 1 then
+  begin
+    writeln('{"code":400,"msg":"dir.targetNoPermission"}');
+    exit;
+  end;
+
+  // 检查源文件是否存在
+  if not File.Exists(path) then
+  begin
+    writeln('{"code":400,"msg":"file.sourceNotExist"}');
+    exit;
+  end;
+
+  // 确保目标目录存在
+  if Copy(targetDir, Length(targetDir), 1) <> '/' then
+    targetDir := targetDir + '/';
+  if not Dir.Exists(targetDir) then
+  begin
+    writeln('{"code":400,"msg":"dir.targetNotExist"}');
+    exit;
+  end;
+
+  // 复制文件到目标目录
+  if File.Copy(path, targetDir) then
+  begin
+    var fileName := File.FileName(path);
+    var storedPath := targetDir + fileName;
+    var fileSize := File.Size(path);
+
+    // 优先使用前端传入的原始文件名，否则查询数据库，最后回退为磁盘文件名
+    var originalName := URLEncode.Decode(request.Params['originalName'], false);
+    if originalName = '' then
+    begin
+      originalName := fileName;
+      try
+        var srcRes := json.parse(db.query('mydb',
+          'SELECT FOriginalName FROM tFileRecords WHERE FStoredPath=:p1 ORDER BY FID DESC LIMIT 1',
+          path));
+        if (srcRes.code = 200) and (srcRes.data.length() > 0) then
+          originalName := srcRes.data[0].FOriginalName;
+      except
+      end;
+    end;
+
+    // 记录新的复制记录（使用原始文件名）
+    db.exec('mydb', 'INSERT INTO tFileRecords(FUsername, FOriginalName, FStoredPath, FFileSize, FCreateTime) VALUES(:p1, :p2, :p3, :p4, :p5)',
+      username, originalName, storedPath, IntToStr(fileSize), FormatDateTime('yyyy-MM-dd hh:nn:ss', Now));
+
+    writeln('{"code":200,"msg":"file.copySuccess"}');
+  end else
+  begin
+    writeln('{"code":500,"msg":"file.copyFailed"}');
+  end;
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

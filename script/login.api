@@ -1,0 +1,55 @@
+include('/conn.cfg');
+
+try
+  var username := URLEncode.Decode(request.Params['username'], false);
+  var password := URLEncode.Decode(request.Params['password'], false);
+
+  // 查询用户
+  var res := db.query('mydb', 'SELECT FID, FUsername, FPassword, FNickname, FEmail, FIsAdmin, FDisabled FROM tUsers WHERE FUsername=:p1', username);
+  var obj := json.parse(res);
+
+  if (obj.code <> 200) or (obj.data.length() = 0) then
+  begin
+    writeln('{"code":400,"msg":"user.notExist"}');
+    exit;
+  end;
+
+  var user := obj.data[0];
+
+  // 检查用户是否被禁用
+  if user.FDisabled = 1 then
+  begin
+    writeln('{"code":400,"msg":"login.accountDisabled"}');
+    exit;
+  end;
+
+  // 验证密码
+  if not Bcrypt.Check(password, user.FPassword) then
+  begin
+    writeln('{"code":400,"msg":"login.pwdWrong"}');
+    exit;
+  end;
+
+  // 生成 JWT Token（7天有效）
+  var payload := json.NewObject;
+  payload.username := username;
+  payload.userid := user.FID;
+  payload.isAdmin := user.FIsAdmin;
+  var token := JWT.Encode('pdisk_secret_key_2024', json.stringify(payload), 7);
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'login.success';
+  var data := json.NewObject;
+  data.token := token;
+  data.username := username;
+  data.nickname := user.FNickname;
+  data.email := user.FEmail;
+  data.isAdmin := user.FIsAdmin;
+  ret.data := data;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

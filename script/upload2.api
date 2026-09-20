@@ -1,0 +1,71 @@
+include('/conn.cfg');
+include('/verify_token.api');
+
+try
+  var username := ReadGlobalVar('_username');
+  var tempPath := URLEncode.Decode(request.Params['tempPath'], false);
+  var originalName := URLEncode.Decode(request.Params['filename'], false);
+
+  if (tempPath = '') or (originalName = '') then
+  begin
+    writeln('{"code":400,"msg":"api.paramIncomplete"}');
+    exit;
+  end;
+
+  // 检查临时文件是否存在
+  if not File.Exists(tempPath) then
+  begin
+    writeln('{"code":400,"msg":"upload.tempFileNotExist"}');
+    exit;
+  end;
+
+  var userDir := '/up/' + username + '/';
+  if not Dir.Exists(userDir) then
+    Dir.mkDir(userDir);
+
+  // 检查配额
+  var dbSize := db.query('mydb', 'SELECT SUM(FFileSize) as total FROM tFileRecords WHERE FUsername=:p1', username);
+  var sizeObj := json.parse(dbSize);
+  var totalSize := 0;
+  if (sizeObj.code = 200) and (sizeObj.data.length() > 0) and (sizeObj.data[0].total <> '') then
+    totalSize := sizeObj.data[0].total;
+
+  var fileSize := File.Size(tempPath);
+  // 从数据库读取用户配额（单位MB），默认10240MB(10GB)
+  var quotaMB := 10240;
+  var userQuotaRes := json.parse(db.query('mydb', 'SELECT FQuota FROM tUsers WHERE FUsername=:p1', username));
+  if (userQuotaRes.code = 200) and (userQuotaRes.data.length() > 0) and (userQuotaRes.data[0].FQuota <> '') then
+    quotaMB := StrToInt(userQuotaRes.data[0].FQuota);
+  var quota := quotaMB * 1048576;
+  if (totalSize + fileSize) > quota then
+  begin
+    File.Delete(tempPath);
+    writeln('{"code":400,"msg":"upload.storageFull"}');
+    exit;
+  end;
+
+  // 复制文件到用户目录（沿用原始git逻辑：复制到目录）
+  if File.Copy(tempPath, userDir) then
+  begin
+    File.Delete(tempPath);
+
+    // 获取复制后的实际文件名
+    var storedFileName := File.FileName(tempPath);
+    var storedPath := userDir + storedFileName;
+
+    // 记录上传记录
+    var nowStr := FormatDateTime('yyyy-MM-dd hh:nn:ss', Now);
+    db.exec('mydb', 'INSERT INTO tFileRecords(FUsername, FOriginalName, FStoredPath, FFileSize, FCreateTime) VALUES(:p1, :p2, :p3, :p4, :p5)',
+      username, originalName, storedPath, IntToStr(fileSize), nowStr);
+
+    writeln('{"code":200,"msg":"upload.success"}');
+  end
+  else
+  begin
+    writeln('{"code":500,"msg":"upload.saveFailed"}');
+  end;
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

@@ -1,0 +1,107 @@
+include('/conn.cfg');
+
+try
+  var shareId := URLEncode.Decode(request.Params['shareId'], false);
+  var password := URLEncode.Decode(request.Params['password'], false);
+
+  if (shareId = '') or (password = '') then
+  begin
+    writeln('{"code":400,"msg":"share.paramIncomplete"}');
+    exit;
+  end;
+
+  var res := json.parse(db.query('mydb', 'SELECT FTitle, FPassword, FNickname, FFiles FROM tShares WHERE FShareID=:p1', shareId));
+  if (res.code <> 200) or (res.data.length() = 0) then
+  begin
+    writeln('{"code":404,"msg":"share.notExist"}');
+    exit;
+  end;
+
+  if res.data[0].FPassword <> password then
+  begin
+    // __check__ 模式：只验证分享是否存在，不返回密码错误（用于分享页显示标题）
+    if password = '__check__' then
+    begin
+      var retC := json.NewObject;
+      retC.code := 200;
+      var dataC := json.NewObject;
+      dataC.title := res.data[0].FTitle;
+      dataC.nickname := res.data[0].FNickname;
+      // 文件数量（让访客知道分享包含几个文件，但不暴露文件列表）
+      try
+        var fcount := json.parse(res.data[0].FFiles).length();
+        dataC.fileCount := fcount;
+      except
+        dataC.fileCount := 0;
+      end;
+      retC.data := dataC;
+      writeln(json.stringify(retC));
+      exit;
+    end;
+    writeln('{"code":4011,"msg":"share.pwdWrong"}');
+    exit;
+  end;
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  var data := json.NewObject;
+  data.title := res.data[0].FTitle;
+  data.nickname := res.data[0].FNickname;
+  // 解析分享文件并补充元数据（大小、上传时间、是否存在）
+  var rawFiles := json.parse(res.data[0].FFiles);
+  var enrichedFiles := json.NewArray;
+  if (rawFiles.length() > 0) then
+  begin
+    for var i := 0 to rawFiles.length() - 1 do
+    begin
+      var raw := rawFiles[i];
+      var fobj := json.NewObject;
+      fobj.file := raw.file;
+      fobj.url := raw.url;
+      var fpath := raw.url;
+      var fsize := 0;
+      var fcTime := '';
+      // 检查文件是否存在
+      var fExists := false;
+      try
+        fExists := File.Exists(fpath);
+      except
+        fExists := false;
+      end;
+      fobj.exists := fExists;
+      // 从 tFileRecords 查询元数据
+      try
+        var recRes := json.parse(db.query('mydb',
+          'SELECT FFileSize, FCreateTime FROM tFileRecords WHERE FStoredPath=:p1 ORDER BY FID DESC LIMIT 1',
+          fpath));
+        if (recRes.code = 200) and (recRes.data.length() > 0) then
+        begin
+          if recRes.data[0].FFileSize <> '' then
+            fsize := StrToInt(recRes.data[0].FFileSize);
+          fcTime := recRes.data[0].FCreateTime;
+        end;
+      except
+      end;
+      // 如果数据库无记录但文件存在，使用文件系统获取大小
+      if (fsize = 0) and fExists then
+      begin
+        try
+          fsize := File.Size(fpath);
+        except
+          fsize := 0;
+        end;
+      end;
+      fobj.size := fsize;
+      fobj.sizeStr := FmtSize(fsize);
+      fobj.createTime := fcTime;
+      enrichedFiles.Add(fobj);
+    end;
+  end;
+  data.files := enrichedFiles;
+  ret.data := data;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

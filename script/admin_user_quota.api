@@ -1,0 +1,64 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+
+  // 验证 JWT Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  // 解码 payload
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var isAdmin := payload.isAdmin;
+
+  // 验证管理员身份
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.adminRequired"}');
+    exit;
+  end;
+
+  var targetUser := URLEncode.Decode(request.Params['targetUser'], false);
+  var quotaGB := URLEncode.Decode(request.Params['quotaGB'], false);
+
+  if (targetUser = '') or (quotaGB = '') then
+  begin
+    writeln('{"code":400,"msg":"admin.paramIncomplete"}');
+    exit;
+  end;
+
+  // 验证配额值为整数
+  var quotaMB := StrToIntDef(quotaGB, -1) * 1024;
+  if quotaMB < 0 then
+  begin
+    writeln('{"code":400,"msg":"admin.quotaInvalid"}');
+    exit;
+  end;
+
+  // 检查目标用户是否存在
+  var checkRes := db.query('mydb', 'SELECT FID FROM tUsers WHERE FUsername=:p1', targetUser);
+  var checkObj := json.parse(checkRes);
+  if (checkObj.code <> 200) or (checkObj.data.length() = 0) then
+  begin
+    writeln('{"code":400,"msg":"user.targetNotExist"}');
+    exit;
+  end;
+
+  // 更新用户配额
+  db.exec('mydb', 'UPDATE tUsers SET FQuota=:p1 WHERE FUsername=:p2', IntToStr(quotaMB), targetUser);
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'admin.quotaUpdated';
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

@@ -1,0 +1,22 @@
+include('/conn.cfg');
+
+try
+  db.exec('mydb', 'DROP TABLE IF EXISTS tShares');
+  db.exec('mydb', 'DROP TABLE IF EXISTS tFileRecords');
+  db.exec('mydb', 'DROP TABLE IF EXISTS tResetRequests');
+  db.exec('mydb', 'DROP TABLE IF EXISTS tUsers');
+  db.exec('mydb', 'DROP TABLE IF EXISTS tSettings');
+
+  db.exec('mydb', 'CREATE TABLE IF NOT EXISTS tUsers (FID INTEGER PRIMARY KEY AUTOINCREMENT, FUsername TEXT UNIQUE NOT NULL, FPassword TEXT NOT NULL, FEmail TEXT NOT NULL, FNickname TEXT NOT NULL, FQuota INTEGER DEFAULT 10240, FUsedSpace INTEGER DEFAULT 0, FDisabled INTEGER DEFAULT 0, FIsAdmin INTEGER DEFAULT 0, FCreateTime TEXT);');
+  db.exec('mydb', 'CREATE TABLE IF NOT EXISTS tFileRecords (FID INTEGER PRIMARY KEY AUTOINCREMENT, FUsername TEXT NOT NULL, FOriginalName TEXT NOT NULL, FStoredPath TEXT NOT NULL, FFileSize INTEGER NOT NULL, FCreateTime TEXT);');
+  db.exec('mydb', 'CREATE TABLE IF NOT EXISTS tResetRequests (FID INTEGER PRIMARY KEY AUTOINCREMENT, FUsername TEXT NOT NULL, FEmail TEXT NOT NULL, FStatus INTEGER DEFAULT 0, FNewPassword TEXT, FRequestTime TEXT, FProcessTime TEXT);');
+  db.exec('mydb', 'CREATE TABLE IF NOT EXISTS tShares (FID INTEGER PRIMARY KEY AUTOINCREMENT, FShareID TEXT UNIQUE NOT NULL, FTitle TEXT NOT NULL, FPassword TEXT NOT NULL, FUsername TEXT NOT NULL, FNickname TEXT NOT NULL, FFiles TEXT NOT NULL, FCreateTime TEXT);');
+  db.exec('mydb', 'CREATE TABLE IF NOT EXISTS tSettings (FKey TEXT UNIQUE NOT NULL, FValue TEXT NOT NULL);');
+  db.exec('mydb', 'INSERT OR IGNORE INTO tSettings(FKey, FValue) VALUES("allowRegistration", "1");');
+  db.exec('mydb', 'INSERT OR IGNORE INTO tSettings(FKey, FValue) VALUES("defaultQuota", "10");');
+  writeln('{"code":200,"msg":"Database initialized successfully."}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

@@ -1,0 +1,60 @@
+include('/conn.cfg');
+
+try
+  // 验证 token
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  // 查询用户配额
+  var userRes := json.parse(db.query('mydb', 'SELECT FQuota FROM tUsers WHERE FUsername=:p1', username));
+  var quotaMB := 10240; // 默认 10 GB (10240 MB)
+  if (userRes.code = 200) and (userRes.data.length() > 0) then
+  begin
+    quotaMB := StrToInt(userRes.data[0].FQuota);
+  end;
+  // 配额 = quotaMB * 1024 * 1024 字节（1 MB = 1048576 字节）
+  var quota := quotaMB * 1048576;
+
+  // 从数据库计算已用空间（SUM FFileSize），避免 Dir.Size 遍历大量文件导致 Range check error
+  var sizeRes := json.parse(db.query('mydb', 'SELECT COALESCE(SUM(FFileSize), 0) as total FROM tFileRecords WHERE FUsername=:p1', username));
+  var usedSpace := 0;
+  if (sizeRes.code = 200) and (sizeRes.data.length() > 0) and (sizeRes.data[0].total <> '') then
+    usedSpace := StrToInt(sizeRes.data[0].total);
+
+  // 计算剩余空间
+  var freeSpace := quota - usedSpace;
+  if freeSpace < 0 then
+    freeSpace := 0;
+
+  // 计算使用百分比
+  var usedPercent:float;
+  if quota > 0 then
+    usedPercent := strtofloat(formatfloat('#.#0',usedSpace / quota * 100));
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  var data := json.NewObject;
+  data.quota := quota;
+  data.quotaStr := FmtSize(quota);
+  data.used := usedSpace;
+  data.usedStr := FmtSize(usedSpace);
+  data.free := freeSpace;
+  data.freeStr := FmtSize(freeSpace);
+  data.usedPercent := usedPercent;
+  ret.data := data;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

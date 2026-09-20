@@ -1,0 +1,36 @@
+include('/conn.cfg');
+include('/verify_token.api');
+
+try
+  var shareId := URLEncode.Decode(request.Params['shareId'], false);
+  if shareId = '' then
+  begin
+    writeln('{"code":400,"msg":"api.paramIncomplete"}');
+    exit;
+  end;
+
+  var username := ReadGlobalVar('_username');
+  var isAdmin := StrToInt(ReadGlobalVar('_isAdmin'));
+
+  // 检查权限
+  var checkRes := json.parse(db.query('mydb', 'SELECT FUsername FROM tShares WHERE FShareID=:p1', shareId));
+  if (checkRes.code <> 200) or (checkRes.data.length() = 0) then
+  begin
+    writeln('{"code":404,"msg":"share.notExist"}');
+    exit;
+  end;
+
+  var owner := checkRes.data[0].FUsername;
+  if (owner <> username) and (isAdmin <> 1) then
+  begin
+    writeln('{"code":403,"msg":"share.noDeletePermission"}');
+    exit;
+  end;
+
+  db.exec('mydb', 'DELETE FROM tShares WHERE FShareID=:p1', shareId);
+  writeln('{"code":200,"msg":"api.deleteSuccess"}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

@@ -1,0 +1,58 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  var filePath := URLEncode.Decode(request.Params['filePath'], false);
+
+  // 验证 JWT Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  // 解码 payload
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+  var userid := payload.userid;
+  var isAdmin := payload.isAdmin;
+
+  // 验证管理员身份
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.adminRequired"}');
+    exit;
+  end;
+
+  // 验证文件路径在 /up/ 目录下
+  if not Regex.isMatch(filePath, '^/up/') then
+  begin
+    writeln('{"code":400,"msg":"file.mustBeUnderUp"}');
+    exit;
+  end;
+
+  // 检查文件是否存在
+  if not File.Exists(filePath) then
+  begin
+    writeln('{"code":400,"msg":"file.notExist"}');
+    exit;
+  end;
+
+  // 删除文件
+  File.Delete(filePath);
+
+  // 从 tFileRecords 表中删除对应记录
+  db.exec('mydb', 'DELETE FROM tFileRecords WHERE FStoredPath=:p1', filePath);
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'file.deleteSuccess';
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

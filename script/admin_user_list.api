@@ -1,0 +1,72 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+
+  // 验证 JWT Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  // 解码 payload
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+  var userid := payload.userid;
+  var isAdmin := payload.isAdmin;
+
+  // 验证管理员身份
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.adminRequired"}');
+    exit;
+  end;
+
+  // 查询所有用户，按 FCreateTime DESC 排序
+  var res := db.query('mydb', 'SELECT FID, FUsername, FEmail, FNickname, FQuota, FUsedSpace, FDisabled, FIsAdmin, FCreateTime FROM tUsers ORDER BY FCreateTime DESC');
+  var obj := json.parse(res);
+
+  if obj.code <> 200 then
+  begin
+    writeln('{"code":500,"msg":"admin.queryUsersFailed"}');
+    exit;
+  end;
+
+  var ret := json.NewObject;
+  ret.code := 200;
+
+  var arr := json.NewArray;
+  for var i := 0 to obj.data.length() - 1 do
+  begin
+    var user := obj.data[i];
+    var item := json.NewObject;
+    item.FID := user.FID;
+    item.FUsername := user.FUsername;
+    item.FEmail := user.FEmail;
+    item.FNickname := user.FNickname;
+    item.FQuota := user.FQuota;
+    item.FQuotaStr := FmtSize(StrToInt(user.FQuota) * 1048576);
+    item.FDisabled := user.FDisabled;
+    item.FIsAdmin := user.FIsAdmin;
+    item.FCreateTime := user.FCreateTime;
+    // 从数据库计算已用空间
+    var sizeRes := json.parse(db.query('mydb', 'SELECT COALESCE(SUM(FFileSize), 0) as total FROM tFileRecords WHERE FUsername=:p1', user.FUsername));
+    var usedSpace := 0;
+    if (sizeRes.code = 200) and (sizeRes.data.length() > 0) and (sizeRes.data[0].total <> '') then
+      usedSpace := StrToInt(sizeRes.data[0].total);
+    item.FUsedSpace := usedSpace;
+    item.FUsedSpaceStr := FmtSize(usedSpace);
+    arr[i] := item;
+  end;
+  ret.data := arr;
+
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

@@ -1,0 +1,11 @@
+include('/conn.cfg');
+
+try
+  db.exec('mydb', 'DROP TABLE IF EXISTS tShares');
+  db.exec('mydb', 'CREATE TABLE IF NOT EXISTS tShares (FID INTEGER PRIMARY KEY AUTOINCREMENT, FShareID TEXT UNIQUE NOT NULL, FTitle TEXT NOT NULL, FPassword TEXT NOT NULL, FUsername TEXT NOT NULL, FNickname TEXT NOT NULL, FFiles TEXT NOT NULL, FCreateTime TEXT);');
+  writeln('{"code":200,"msg":"Share table recreated."}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

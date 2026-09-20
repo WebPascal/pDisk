@@ -1,0 +1,31 @@
+include('/conn.cfg');
+
+try
+  var username := URLEncode.Decode(request.Params['username'], false);
+  var email := URLEncode.Decode(request.Params['email'], false);
+
+  // 验证用户名和邮箱不为空
+  if (username = '') or (email = '') then
+  begin
+    writeln('{"code":400,"msg":"resetPwd.usernameEmailRequired"}');
+    exit;
+  end;
+
+  // 查询用户是否匹配（不区分结果，防止用户枚举）
+  var res := db.query('mydb', 'SELECT FUsername FROM tUsers WHERE FUsername=:p1 AND FEmail=:p2', username, email);
+  var obj := json.parse(res);
+
+  if (obj.code = 200) and (obj.data.length() > 0) then
+  begin
+    // 用户匹配，插入重置请求记录
+    var nowStr := FormatDateTime('yyyy-MM-dd hh:nn:ss', Now);
+    db.exec('mydb', 'INSERT INTO tResetRequests(FUsername, FEmail, FStatus, FRequestTime) VALUES(:p1, :p2, 0, :p3)', username, email, nowStr);
+  end;
+
+  // 无论是否匹配，均返回通用消息
+  writeln('{"code":200,"msg":"resetPwd.requestSubmitted"}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

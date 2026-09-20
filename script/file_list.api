@@ -1,0 +1,208 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  var userRoot := '/up/' + username + '/';
+  var currentDir := URLEncode.Decode(request.Params['dir'], false);
+  var recent := URLEncode.Decode(request.Params['recent'], false);
+
+  // 如果指定 recent=1，则从数据库查询该用户所有最近上传记录
+  if recent = '1' then
+  begin
+    var dbRes := json.parse(db.query('mydb',
+      'SELECT FOriginalName, FStoredPath, FFileSize, FCreateTime FROM tFileRecords WHERE FUsername=:p1 ORDER BY FID DESC LIMIT 30',
+      username));
+
+    var files := json.NewArray;
+    if (dbRes.code = 200) and (dbRes.data.length() > 0) then
+    begin
+      for var i := 0 to dbRes.data.length() - 1 do
+      begin
+        var rec := dbRes.data[i];
+        var fileObj := json.NewObject;
+        fileObj.name := rec.FOriginalName;
+        fileObj.path := rec.FStoredPath;
+        if rec.FFileSize <> '' then
+          fileObj.size := StrToInt(rec.FFileSize)
+        else
+          fileObj.size := 0;
+        fileObj.sizeStr := FmtSize(fileObj.size);
+        fileObj.createTime := rec.FCreateTime;
+        fileObj.mime := File.MIME(rec.FStoredPath);
+        files.Add(fileObj);
+      end;
+    end;
+
+    var ret := json.NewObject;
+    ret.code := 200;
+    var data := json.NewObject;
+    data.files := files;
+    data.currentDir := userRoot;
+    data.parentDir := '';
+    ret.data := data;
+    writeln(json.stringify(ret));
+    exit;
+  end;
+
+  // 如果没有指定目录，使用用户根目录
+  if (currentDir = '') or (currentDir = '/up/' + username) or (currentDir = userRoot) then
+    currentDir := userRoot;
+
+  // 确保目录路径合法（必须以 /up/username/ 开头）
+  if Pos(userRoot, currentDir) <> 1 then
+    currentDir := userRoot;
+
+  // 确保以 / 结尾
+  if Copy(currentDir, Length(currentDir), 1) <> '/' then
+    currentDir := currentDir + '/';
+
+  // 检查目录是否存在
+  if not Dir.Exists(currentDir) then
+  begin
+    // 如果是用户根目录，自动创建
+    if currentDir = userRoot then
+    begin
+      Dir.mkDir(userRoot);
+    end
+    else
+    begin
+      writeln('{"code":400,"msg":"dir.notExist"}');
+      exit;
+    end;
+  end;
+
+  // 获取子目录列表
+  var dirs := json.NewArray;
+  try
+    var dirListStr := Dir.DirList(currentDir);
+    if (dirListStr <> '') and (dirListStr <> 'Directory not found') and (dirListStr <> 'File not found') then
+    begin
+      var dirEntries := dirListStr.Split(#13#10);
+      for var fullPath in dirEntries do
+      begin
+        if fullPath = '' then Continue;
+        if fullPath = 'Directory not found' then Continue;
+        fullPath := fullPath.Trim();
+        if fullPath = '' then Continue;
+        // 去掉末尾的 /
+        if Copy(fullPath, Length(fullPath), 1) = '/' then
+          fullPath := Copy(fullPath, 1, Length(fullPath) - 1);
+        // 过滤非当前目录的直接子目录（Dir.DirList 返回递归结果）
+        var dirParent := File.Path(fullPath);
+        if dirParent <> currentDir then Continue;
+        var dirName := File.FileName(fullPath);
+        if (dirName <> '') and (dirName <> '.') and (dirName <> '..') then
+        begin
+          var dirObj := json.NewObject;
+          dirObj.name := dirName;
+          dirs.Add(dirObj);
+        end;
+      end;
+    end;
+  except
+    // 目录列表异常时忽略
+  end;
+
+  // 获取文件列表
+  var files := json.NewArray;
+  try
+    var fileListStr := Dir.FileList(currentDir);
+    if (fileListStr <> '') and (fileListStr <> 'Directory not found') then
+    begin
+      var fileEntries := fileListStr.Split(#13#10);
+      for var fullPath in fileEntries do
+      begin
+        if fullPath = '' then Continue;
+        if (fullPath = 'Directory not found') or (fullPath = 'File not found') then Continue;
+        fullPath := fullPath.Trim();
+        if fullPath = '' then Continue;
+        var fileName := File.FileName(fullPath);
+        if fileName = '' then Continue;
+        // 检查文件是否在当前目录下
+        var fileDir := File.Path(fullPath);
+        if fileDir <> currentDir then Continue;
+        if Pos('/', fileName) > 0 then Continue;
+
+        var storedPath := currentDir + fileName;
+        var originalName := fileName;
+        var fileSize := 0;
+        var createTime := '';
+        try
+          var recRes := json.parse(db.query('mydb',
+            'SELECT FOriginalName, FFileSize, FCreateTime FROM tFileRecords WHERE FStoredPath=:p1 ORDER BY FID DESC LIMIT 1',
+            storedPath));
+          if (recRes.code = 200) and (recRes.data.length() > 0) then
+          begin
+            originalName := recRes.data[0].FOriginalName;
+            if recRes.data[0].FFileSize <> '' then
+              fileSize := recRes.data[0].FFileSize;
+            createTime := recRes.data[0].FCreateTime;
+          end
+          else
+          begin
+            if File.Exists(storedPath) then
+              fileSize := File.Size(storedPath);
+          end;
+        except
+          if File.Exists(storedPath) then
+            fileSize := File.Size(storedPath);
+        end;
+
+        var fileObj := json.NewObject;
+        fileObj.name := originalName;
+        fileObj.path := storedPath;
+        fileObj.size := fileSize;
+        fileObj.sizeStr := FmtSize(fileSize);
+        fileObj.createTime := createTime;
+        fileObj.mime := File.MIME(storedPath);
+        files.Add(fileObj);
+      end;
+    end;
+  except
+    // 文件列表异常时忽略
+  end;
+
+  // 计算父目录
+  var parentDir := '';
+  if currentDir <> userRoot then
+  begin
+    var trimDir := Copy(currentDir, 1, Length(currentDir) - 1);
+    var lastSlash := 0;
+    for var j := Length(trimDir) downto 1 do
+    begin
+      if Copy(trimDir, j, 1) = '/' then
+      begin
+        lastSlash := j;
+        Break;
+      end;
+    end;
+    if lastSlash > 0 then
+      parentDir := Copy(trimDir, 1, lastSlash);
+  end;
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  var data := json.NewObject;
+  data.dirs := dirs;
+  data.files := files;
+  data.currentDir := currentDir;
+  data.parentDir := parentDir;
+  ret.data := data;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

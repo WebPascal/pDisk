@@ -1,0 +1,28 @@
+include('/conn.cfg');
+
+try
+  var res := db.query('mydb', 'SELECT FKey, FValue FROM tSettings');
+  var obj := json.parse(res);
+
+  var ret := json.NewObject;
+  ret.code := 200;
+
+  var arr := json.NewArray;
+  if (obj.code = 200) then
+  begin
+    for var i := 0 to obj.data.length() - 1 do
+    begin
+      var item := json.NewObject;
+      item.FKey := obj.data[i].FKey;
+      item.FValue := obj.data[i].FValue;
+      arr[i] := item;
+    end;
+  end;
+
+  ret.data := arr;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

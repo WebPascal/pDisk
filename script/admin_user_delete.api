@@ -1,0 +1,117 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  var targetUser := URLEncode.Decode(request.Params['targetUser'], false);
+
+  // 验证 JWT Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  // 解码 payload
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+  var userid := payload.userid;
+  var isAdmin := payload.isAdmin;
+
+  // 验证管理员身份
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.adminRequired"}');
+    exit;
+  end;
+
+  // 验证 targetUser 参数
+  if targetUser = '' then
+  begin
+    writeln('{"code":400,"msg":"admin.specifyDeleteUser"}');
+    exit;
+  end;
+
+  // 不能删除自己
+  if targetUser = username then
+  begin
+    writeln('{"code":400,"msg":"admin.cannotDeleteSelf"}');
+    exit;
+  end;
+
+  // 检查目标用户是否存在
+  var checkRes := db.query('mydb', 'SELECT FID FROM tUsers WHERE FUsername=:p1', targetUser);
+  var checkObj := json.parse(checkRes);
+  if (checkObj.code <> 200) or (checkObj.data.length() = 0) then
+  begin
+    writeln('{"code":400,"msg":"user.targetNotExist"}');
+    exit;
+  end;
+
+  // 删除用户的文件记录
+  db.exec('mydb', 'DELETE FROM tFileRecords WHERE FUsername=:p1', targetUser);
+
+  // 删除用户记录
+  db.exec('mydb', 'DELETE FROM tUsers WHERE FUsername=:p1', targetUser);
+
+  // 删除用户的磁盘目录
+  var userDir := '/up/' + targetUser + '/';
+  if Dir.Exists(userDir) then
+  begin
+    // 先删除目录下的所有文件
+    try
+      var fileList := Dir.FileList(userDir);
+      if (fileList <> '') and (fileList <> 'Directory not found') and (fileList <> 'File not found') then
+      begin
+        var entries := fileList.Split(#13#10);
+        for var entry in entries do
+        begin
+          var filePath := entry.Trim();
+          if filePath = '' then Continue;
+          if filePath = 'Directory not found' then Continue;
+          if filePath = 'File not found' then Continue;
+          if File.Exists(filePath) then
+            File.Delete(filePath);
+        end;
+      end;
+    except
+    end;
+
+    // 删除子目录
+    try
+      var subDirs := Dir.DirList(userDir);
+      if (subDirs <> '') and (subDirs <> 'Directory not found') and (subDirs <> 'File not found') then
+      begin
+        var entries := subDirs.Split(#13#10);
+        for var entry in entries do
+        begin
+          var subDir := entry.Trim();
+          if subDir = '' then Continue;
+          if subDir = 'Directory not found' then Continue;
+          if subDir = 'File not found' then Continue;
+          if Copy(subDir, Length(subDir), 1) <> '/' then
+            subDir := subDir + '/';
+          Dir.Delete(subDir);
+        end;
+      end;
+    except
+    end;
+
+    // 删除目录本身
+    try
+      Dir.Delete(userDir);
+    except
+    end;
+  end;
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'admin.userDeleted';
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

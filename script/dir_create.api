@@ -1,0 +1,85 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  var dirname := URLEncode.Decode(request.Params['dirname'], false);
+  var parentDir := URLEncode.Decode(request.Params['dir'], false);
+
+  if (dirname = '') then
+  begin
+    writeln('{"code":400,"msg":"dir.specifyName"}');
+    exit;
+  end;
+
+  var basePath := '/up/' + username + '/';
+  var destPath := basePath;
+  if (parentDir <> '') then
+  begin
+    // 确保 parentDir 是绝对路径
+    if Copy(parentDir, 1, 1) <> '/' then
+      parentDir := basePath + parentDir;
+    if Copy(parentDir, Length(parentDir), 1) <> '/' then
+      parentDir := parentDir + '/';
+    // 确保目录在用户根目录下
+    if Pos(basePath, parentDir) <> 1 then
+      parentDir := basePath;
+    destPath := parentDir;
+  end;
+
+  var dirPath := destPath + dirname;
+  if Copy(dirPath, Length(dirPath), 1) <> '/' then
+    dirPath := dirPath + '/';
+
+  if Dir.Exists(dirPath) then
+  begin
+    writeln('{"code":400,"msg":"dir.alreadyExist"}');
+    exit;
+  end;
+
+  var cumPath := destPath;
+  var scanDir := dirname;
+  var slashPos := Pos('/', scanDir);
+  while slashPos > 0 do
+  begin
+    var seg := Copy(scanDir, 1, slashPos - 1);
+    if seg <> '' then
+    begin
+      cumPath := cumPath + seg + '/';
+      if not Dir.Exists(cumPath) then
+        Dir.mkDir(cumPath);
+    end;
+    scanDir := Copy(scanDir, slashPos + 1, Length(scanDir) - slashPos);
+    slashPos := Pos('/', scanDir);
+  end;
+
+  if scanDir <> '' then
+  begin
+    cumPath := cumPath + scanDir + '/';
+    if not Dir.Exists(cumPath) then
+    begin
+      if not Dir.mkDir(cumPath) then
+      begin
+        writeln('{"code":500,"msg":"dir.createFailed"}');
+        exit;
+      end;
+    end;
+  end;
+
+  writeln('{"code":200,"msg":"dir.createSuccess"}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

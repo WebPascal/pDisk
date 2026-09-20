@@ -1,0 +1,47 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+
+  // 验证 JWT Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  // 解码 payload
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var isAdmin := payload.isAdmin;
+
+  // 验证管理员身份
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.adminRequired"}');
+    exit;
+  end;
+
+  var key := URLEncode.Decode(request.Params['key'], false);
+  var value := URLEncode.Decode(request.Params['value'], false);
+
+  if (key <> 'allowRegistration') and (key <> 'defaultQuota') then
+  begin
+    writeln('{"code":400,"msg":"settings.invalidKey"}');
+    exit;
+  end;
+
+  // 更新配置值（使用 INSERT OR REPLACE，确保表为空时也能写入）
+  db.exec('mydb', 'INSERT OR REPLACE INTO tSettings(FKey, FValue) VALUES(:p1, :p2)', key, value);
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'settings.updated';
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

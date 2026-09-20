@@ -1,0 +1,36 @@
+include('/conn.cfg');
+
+try
+  var key := URLEncode.Decode(request.Params['key'], false);
+
+  if (key <> 'allowRegistration') and (key <> 'defaultQuota') then
+  begin
+    writeln('{"code":400,"msg":"settings.invalidKey"}');
+    exit;
+  end;
+
+  var res := db.query('mydb', 'SELECT FValue FROM tSettings WHERE FKey=:p1', key);
+  var obj := json.parse(res);
+
+  var ret := json.NewObject;
+  ret.code := 200;
+
+  if (obj.code = 200) and (obj.data.length() > 0) then
+  begin
+    var data := json.NewObject;
+    data.value := obj.data[0].FValue;
+    ret.data := data;
+  end
+  else
+  begin
+    var data := json.NewObject;
+    data.value := '';
+    ret.data := data;
+  end;
+
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

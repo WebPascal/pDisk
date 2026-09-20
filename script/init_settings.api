@@ -1,0 +1,13 @@
+include('/conn.cfg');
+
+try
+  db.exec('mydb', 'DROP TABLE IF EXISTS tSettings');
+  db.exec('mydb', 'CREATE TABLE IF NOT EXISTS tSettings (FKey TEXT UNIQUE NOT NULL, FValue TEXT NOT NULL);');
+  db.exec('mydb', 'INSERT OR IGNORE INTO tSettings(FKey, FValue) VALUES("allowRegistration", "1");');
+  db.exec('mydb', 'INSERT OR IGNORE INTO tSettings(FKey, FValue) VALUES("defaultQuota", "10");');
+  writeln('{"code":200,"msg":"Settings table initialized successfully."}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

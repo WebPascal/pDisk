@@ -1,0 +1,163 @@
+include('/conn.cfg');
+
+// 辅助函数：获取路径在数据库中的记录大小（无记录返回 ''）
+function GetDbSize(dbJsonStr: String; targetPath: String): String;
+begin
+  Result := '';
+  var obj := json.parse(dbJsonStr);
+  if obj.code <> 200 then Exit;
+  for var j := 0 to obj.data.length() - 1 do
+  begin
+    if obj.data[j].FStoredPath = targetPath then
+    begin
+      Result := obj.data[j].FFileSize;
+      Exit;
+    end;
+  end;
+end;
+
+// 辅助函数：获取路径在数据库中的原始文件名（无记录返回 ''）
+function GetDbName(dbJsonStr: String; targetPath: String): String;
+begin
+  Result := '';
+  var obj := json.parse(dbJsonStr);
+  if obj.code <> 200 then Exit;
+  for var j := 0 to obj.data.length() - 1 do
+  begin
+    if obj.data[j].FStoredPath = targetPath then
+    begin
+      Result := obj.data[j].FOriginalName;
+      Exit;
+    end;
+  end;
+end;
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var isAdmin := payload.isAdmin;
+
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.adminRequired"}');
+    exit;
+  end;
+
+  // 查询所有用户
+  var usersRes := json.parse(db.query('mydb', 'SELECT FUsername FROM tUsers'));
+  if usersRes.code <> 200 then
+  begin
+    writeln('{"code":500,"msg":"admin.queryUserFailed"}');
+    exit;
+  end;
+
+  var added := 0;
+  var deleted := 0;
+  var changed := 0;
+
+  for var i := 0 to usersRes.data.length() - 1 do
+  begin
+    var username := usersRes.data[i].FUsername;
+    var userDir := '/up/' + username + '/';
+
+    // 获取数据库中的文件记录（JSON字符串）
+    var dbFilesRaw := db.query('mydb', 'SELECT FStoredPath, FOriginalName, FFileSize FROM tFileRecords WHERE FUsername=:p1', username);
+
+    // 获取文件系统实际文件列表
+    var fileList := '';
+    if Dir.Exists(userDir) then
+    begin
+      fileList := Dir.FileList(userDir);
+      // 如果返回 "File not found" 提示，视为空目录
+      if Trim(fileList) = 'File not found' then fileList := '';
+    end;
+
+    // 遍历文件系统文件，与数据库对比
+    if fileList <> '' then
+    begin
+      for var e in fileList.Split(#13#10) do
+      begin
+        if e.Trim() = '' then Continue;
+        var fullPath := e;
+        if Copy(fullPath, 1, 1) <> '/' then fullPath := userDir + fullPath;
+
+        // 确认是真实文件
+        if not File.Exists(fullPath) then Continue;
+
+        var fileName := File.FileName(fullPath);
+        var fileSize := File.Size(fullPath);
+        var dbSize := GetDbSize(dbFilesRaw, fullPath);
+
+        // 检查该路径是否在数据库中
+        if dbSize = '' then
+        begin
+          // 文件存在但数据库无记录，添加
+          var nowStr := FormatDateTime('yyyy-MM-dd hh:nn:ss', Now);
+          db.exec('mydb', 'INSERT INTO tFileRecords(FUsername, FOriginalName, FStoredPath, FFileSize, FCreateTime) VALUES(:p1, :p2, :p3, :p4, :p5)',
+            username, fileName, fullPath, IntToStr(fileSize), nowStr);
+          logger.info('[' + username + '] 新增记录: 存储名=' + fileName + ' 路径=' + fullPath + ' 大小=' + IntToStr(fileSize));
+          added := added + 1;
+        end
+        else
+        begin
+          // 文件已存在，检查文件大小是否一致
+          if dbSize <> IntToStr(fileSize) then
+          begin
+            db.exec('mydb', 'UPDATE tFileRecords SET FFileSize=:p1 WHERE FStoredPath=:p2', IntToStr(fileSize), fullPath);
+            logger.info('[' + username + '] 更新大小: 存储名=' + fileName + ' 原大小=' + dbSize + ' 新大小=' + IntToStr(fileSize));
+            changed := changed + 1;
+          end;
+        end;
+      end;
+    end;
+
+    // 遍历数据库记录，删除文件系统中不存在的
+    var dbObj := json.parse(dbFilesRaw);
+    if (dbObj.code = 200) then
+    begin
+      for var j := 0 to dbObj.data.length() - 1 do
+      begin
+        var dbPath := dbObj.data[j].FStoredPath;
+        if not File.Exists(dbPath) then
+        begin
+          db.exec('mydb', 'DELETE FROM tFileRecords WHERE FStoredPath=:p1', dbPath);
+          logger.info('[' + username + '] 删除记录: 原始名=' + dbObj.data[j].FOriginalName + ' 路径=' + dbPath);
+          deleted := deleted + 1;
+        end;
+      end;
+    end;
+
+    // 重新计算用户目录总容量
+    var usedSpace := 0;
+    if Dir.Exists(userDir) then
+      usedSpace := Dir.Size(userDir);
+
+    // 更新 tUsers 表的 FUsedSpace
+    db.exec('mydb', 'UPDATE tUsers SET FUsedSpace=:p1 WHERE FUsername=:p2', IntToStr(usedSpace), username);
+  end;
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'syncDisk.complete';
+  var dataObj := json.NewObject;
+  dataObj.added := added;
+  dataObj.deleted := deleted;
+  dataObj.changed := changed;
+  ret.data := dataObj;
+  writeln(json.stringify(ret));
+
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

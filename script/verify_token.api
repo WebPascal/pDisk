@@ -1,0 +1,29 @@
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+
+  // 验证 JWT Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  // 解码 payload
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+  var userid := payload.userid;
+  var isAdmin := payload.isAdmin;
+
+  // 设置全局变量供调用方使用
+  WriteGlobalVar('_username', username);
+  WriteGlobalVar('_userid', userid);
+  WriteGlobalVar('_isAdmin', IntToStr(isAdmin));
+except on E : Exception do
+begin
+  writeln('{"code":401,"msg":"auth.tokenExpired"}');
+  exit;
+end;
+end;

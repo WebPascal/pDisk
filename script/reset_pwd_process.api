@@ -1,0 +1,93 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  var resetId := URLEncode.Decode(request.Params['resetId'], false);
+  var action := URLEncode.Decode(request.Params['action'], false);
+  var newPassword := URLEncode.Decode(request.Params['newPassword'], false);
+
+  // 验证 Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var isAdmin := payload.isAdmin;
+
+  // 验证管理员身份
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.noPermission"}');
+    exit;
+  end;
+
+  // 验证参数
+  if (Length(resetId) = 0) or (Length(action) = 0) then
+  begin
+    writeln('{"code":400,"msg":"api.paramIncomplete"}');
+    exit;
+  end;
+
+  if (action <> 'approve') and (action <> 'reject') then
+  begin
+    writeln('{"code":400,"msg":"resetPwd.actionInvalid"}');
+    exit;
+  end;
+
+  if (action = 'approve') and (newPassword = '') then
+  begin
+    writeln('{"code":400,"msg":"resetPwd.mustProvideNewPwd"}');
+    exit;
+  end;
+
+  // 查询重置请求记录
+  var res := db.query('mydb', 'SELECT FID, FUsername, FStatus FROM tResetRequests WHERE FID=:p1', resetId);
+  var obj := json.parse(res);
+
+  if (obj.code <> 200) or (obj.data.length() = 0) then
+  begin
+    writeln('{"code":400,"msg":"resetPwd.recordNotExist"}');
+    exit;
+  end;
+
+  var requestRec := obj.data[0];
+
+  if requestRec.FStatus <> 0 then
+  begin
+    writeln('{"code":400,"msg":"resetPwd.alreadyProcessed"}');
+    exit;
+  end;
+
+  var nowStr := FormatDateTime('yyyy-MM-dd hh:nn:ss', Now);
+
+  if action = 'approve' then
+  begin
+    // 加密新密码
+    var hashedPwd := Bcrypt.Encode(newPassword);
+
+    // 更新用户密码
+    db.exec('mydb', 'UPDATE tUsers SET FPassword=:p1 WHERE FUsername=:p2', hashedPwd, requestRec.FUsername);
+
+    // 删除请求记录（已处理完）
+    db.exec('mydb', 'DELETE FROM tResetRequests WHERE FID=:p1', resetId);
+  end
+  else if action = 'reject' then
+  begin
+    // 拒绝：直接删除记录，允许用户重新申请
+    db.exec('mydb', 'DELETE FROM tResetRequests WHERE FID=:p1', resetId);
+  end;
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'resetPwd.processed';
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

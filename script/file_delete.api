@@ -1,0 +1,61 @@
+include('/conn.cfg');
+
+try
+  // 验证 token
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  var path := URLEncode.Decode(request.Params['path'], false);
+
+  // 验证参数
+  if (path = '') then
+  begin
+    writeln('{"code":400,"msg":"file.specifyDeletePath"}');
+    exit;
+  end;
+
+  // 确保路径以 /up/ 开头
+  if Pos('/up/', path) <> 1 then
+    path := '/up/' + path;
+
+  // 验证文件路径属于当前用户
+  var userPrefix := '/up/' + username + '/';
+  if Pos(userPrefix, path) <> 1 then
+  begin
+    writeln('{"code":400,"msg":"file.noDeletePermission"}');
+    exit;
+  end;
+
+  // 检查文件是否存在
+  if not File.Exists(path) then
+  begin
+    writeln('{"code":400,"msg":"file.notExist"}');
+    exit;
+  end;
+
+  // 删除文件
+  if File.Delete(path) then
+  begin
+    // 从 tFileRecords 表中删除对应的记录
+    db.exec('mydb', 'DELETE FROM tFileRecords WHERE FStoredPath=:p1', path);
+
+    writeln('{"code":200,"msg":"api.deleteSuccess"}');
+  end else
+  begin
+    writeln('{"code":500,"msg":"file.deleteFailed"}');
+  end;
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

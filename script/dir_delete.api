@@ -1,0 +1,119 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  var dirPath := URLEncode.Decode(request.Params['dirPath'], false);
+
+  if dirPath = '' then
+  begin
+    writeln('{"code":400,"msg":"dir.specifyPath"}');
+    exit;
+  end;
+
+  // 确保路径以 /up/ 开头
+  if Pos('/up/', dirPath) <> 1 then
+    dirPath := '/up/' + dirPath;
+
+  // 验证目录属于当前用户
+  var userPrefix := '/up/' + username + '/';
+  if Pos(userPrefix, dirPath) <> 1 then
+  begin
+    writeln('{"code":400,"msg":"dir.noPermission"}');
+    exit;
+  end;
+
+  // 确保以 / 结尾
+  if Copy(dirPath, Length(dirPath), 1) <> '/' then
+    dirPath := dirPath + '/';
+
+  // 不能删除根目录
+  if dirPath = userPrefix then
+  begin
+    writeln('{"code":400,"msg":"dir.cannotDeleteRoot"}');
+    exit;
+  end;
+
+  // 检查目录是否存在
+  if not Dir.Exists(dirPath) then
+  begin
+    writeln('{"code":400,"msg":"dir.notExist"}');
+    exit;
+  end;
+
+  // 删除目录及其所有文件
+  // 先删除目录下的所有文件
+  try
+    var fileList := Dir.FileList(dirPath);
+    if (fileList <> '') and (fileList <> 'Directory not found') and (fileList <> 'File not found') then
+    begin
+      var entries := fileList.Split(#13#10);
+      for var entry in entries do
+      begin
+        var filePath := entry.Trim();
+        if filePath = '' then Continue;
+        if filePath = 'Directory not found' then Continue;
+        if filePath = 'File not found' then Continue;
+        if File.Exists(filePath) then
+        begin
+          File.Delete(filePath);
+          // 删除对应的数据库记录
+          db.exec('mydb', 'DELETE FROM tFileRecords WHERE FStoredPath=:p1', filePath);
+        end;
+      end;
+    end;
+  except
+  end;
+
+  // 删除子目录（递归）
+  try
+    var subDirs := Dir.DirList(dirPath);
+    if (subDirs <> '') and (subDirs <> 'Directory not found') and (subDirs <> 'File not found') then
+    begin
+      var entries := subDirs.Split(#13#10);
+      for var entry in entries do
+      begin
+        var subDir := entry.Trim();
+        if subDir = '' then Continue;
+        if subDir = 'Directory not found' then Continue;
+        if subDir = 'File not found' then Continue;
+        // 确保以 / 结尾
+        if Copy(subDir, Length(subDir), 1) <> '/' then
+          subDir := subDir + '/';
+        Dir.Delete(subDir);
+      end;
+    end;
+  except
+  end;
+
+  // 删除目录本身
+  try
+    if not Dir.Delete(dirPath) then
+    begin
+      writeln('{"code":500,"msg":"dir.deleteFailed"}');
+      exit;
+    end;
+  except on E : Exception do
+  begin
+    writeln('{"code":500,"msg":"' + E.Message + '"}');
+    exit;
+  end;
+  end;
+
+  writeln('{"code":200,"msg":"dir.deleted"}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

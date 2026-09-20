@@ -1,0 +1,53 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  var userRoot := '/up/' + username + '/';
+
+  // 递归获取所有目录
+  var dirListStr := Dir.DirList(userRoot);
+  var dirs := json.NewArray;
+  if (dirListStr <> '') and (dirListStr <> 'Directory not found') and (dirListStr <> 'File not found') then
+  begin
+    var dirEntries := dirListStr.Split(#13#10);
+    for var fullPath in dirEntries do
+    begin
+      if fullPath = '' then Continue;
+      fullPath := fullPath.Trim();
+      if fullPath = '' then Continue;
+      if Copy(fullPath, Length(fullPath), 1) = '/' then
+        fullPath := Copy(fullPath, 1, Length(fullPath) - 1);
+      // 转为相对路径（去掉 userRoot 前缀）
+      var prefixLen := Length(userRoot);
+      var relPath := '';
+      if Copy(fullPath, 1, prefixLen) = userRoot then
+        relPath := Copy(fullPath, prefixLen + 1, Length(fullPath) - prefixLen)
+      else
+        relPath := fullPath;
+      if relPath <> '' then
+      begin
+        var dirObj := json.NewObject;
+        dirObj.relPath := relPath;
+        dirs.Add(dirObj);
+      end;
+    end;
+  end;
+
+  writeln('{"code":200,"data":' + json.stringify(dirs) + '}');
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

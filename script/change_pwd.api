@@ -1,0 +1,56 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+  var oldPassword := URLEncode.Decode(request.Params['oldPassword'], false);
+  var newPassword := URLEncode.Decode(request.Params['newPassword'], false);
+
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var username := payload.username;
+
+  // 查询用户
+  var res := db.query('mydb', 'SELECT FPassword FROM tUsers WHERE FUsername=:p1', username);
+  var obj := json.parse(res);
+
+  if (obj.code <> 200) or (obj.data.length() = 0) then
+  begin
+    writeln('{"code":400,"msg":"user.notExist"}');
+    exit;
+  end;
+
+  // 验证旧密码
+  if not Bcrypt.Check(oldPassword, obj.data[0].FPassword) then
+  begin
+    writeln('{"code":400,"msg":"changePwd.oldPwdWrong"}');
+    exit;
+  end;
+
+  // 验证新密码
+  if Length(newPassword) < 4 then
+  begin
+    writeln('{"code":400,"msg":"changePwd.newPwdLength"}');
+    exit;
+  end;
+
+  // 更新密码
+  var hashedPwd := Bcrypt.Encode(newPassword);
+  db.exec('mydb', 'UPDATE tUsers SET FPassword=:p1 WHERE FUsername=:p2', hashedPwd, username);
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'changePwd.success';
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

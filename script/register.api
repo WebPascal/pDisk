@@ -1,0 +1,90 @@
+include('/conn.cfg');
+
+try
+  var username := URLEncode.Decode(request.Params['username'], false);
+  var password := URLEncode.Decode(request.Params['password'], false);
+  var email := URLEncode.Decode(request.Params['email'], false);
+  var nickname := URLEncode.Decode(request.Params['nickname'], false);
+
+  // 检查是否允许注册
+  var regRes := db.query('mydb', 'SELECT FValue FROM tSettings WHERE FKey="allowRegistration"');
+  var regObj := json.parse(regRes);
+  if (regObj.code = 200) and (regObj.data.length() > 0) then
+  begin
+    if regObj.data[0].FValue = '0' then
+    begin
+      writeln('{"code":403,"msg":"register.closed"}');
+      exit;
+    end;
+  end;
+
+  // 验证用户名格式：仅允许 a-z0-9，长度 3-20 位
+  if not Regex.isMatch(username, '^[a-z0-9]{3,20}$') then
+  begin
+    writeln('{"code":400,"msg":"register.usernameFormat"}');
+    exit;
+  end;
+
+  // 验证邮箱格式：包含 @ 符号
+  if not Regex.isMatch(email, '^[^@]+@[^@]+$') then
+  begin
+    writeln('{"code":400,"msg":"register.emailFormat"}');
+    exit;
+  end;
+
+  // 验证密码长度：至少 6 位
+  if Length(password) < 6 then
+  begin
+    writeln('{"code":400,"msg":"register.pwdLength"}');
+    exit;
+  end;
+
+  // 检查用户名是否已存在
+  var checkRes := db.query('mydb', 'SELECT FID FROM tUsers WHERE FUsername=:p1', username);
+  var checkObj := json.parse(checkRes);
+  if checkObj.code = 200 then
+  begin
+    if checkObj.data.length() > 0 then
+    begin
+      writeln('{"code":400,"msg":"register.usernameExist"}');
+      exit;
+    end;
+  end;
+
+  // 检查是否是第一个注册用户
+  var countRes := db.query('mydb', 'SELECT COUNT(*) AS cnt FROM tUsers');
+  var countObj := json.parse(countRes);
+  var isAdmin := 0;
+  if countObj.code = 200 then
+  begin
+    if countObj.data[0].cnt = 0 then
+      isAdmin := 1;
+  end;
+
+  // 获取默认配额
+  var quotaRes := db.query('mydb', 'SELECT FValue FROM tSettings WHERE FKey="defaultQuota"');
+  var quotaObj := json.parse(quotaRes);
+  var quotaMB := 10240; // 默认10GB
+  if (quotaObj.code = 200) and (quotaObj.data.length() > 0) then
+  begin
+    quotaMB := StrToIntDef(quotaObj.data[0].FValue, 10) * 1024;
+  end;
+
+  // 密码加密
+  var hashedPwd := Bcrypt.Encode(password);
+
+  // 插入用户记录
+  db.exec('mydb', 'INSERT INTO tUsers(FUsername, FPassword, FEmail, FNickname, FQuota, FIsAdmin) VALUES(:p1, :p2, :p3, :p4, :p5, :p6)', username, hashedPwd, email, nickname, IntToStr(quotaMB), IntToStr(isAdmin));
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.msg := 'register.success';
+  var data := json.NewObject;
+  data.isAdmin := isAdmin;
+  ret.data := data;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

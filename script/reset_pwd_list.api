@@ -1,0 +1,56 @@
+include('/conn.cfg');
+
+try
+  var authHeader := request.Headers['Authorization'];
+  var token := '';
+  if Length(authHeader) > 7 then token := Copy(authHeader, 8, Length(authHeader) - 7);
+
+  // 验证 Token
+  if not JWT.Verify('pdisk_secret_key_2024', token) then
+  begin
+    writeln('{"code":401,"msg":"auth.tokenExpired"}');
+    exit;
+  end;
+
+  var payloadStr := base64.decode(regex.match(token, '(?<=\.).*?(?=\.)'));
+  var payload := json.parse(payloadStr);
+  var isAdmin := payload.isAdmin;
+
+  // 验证管理员身份
+  if isAdmin <> 1 then
+  begin
+    writeln('{"code":403,"msg":"auth.noPermission"}');
+    exit;
+  end;
+
+  // 查询重置请求列表
+  var res := db.query('mydb', 'SELECT FID, FUsername, FEmail, FStatus, FRequestTime FROM tResetRequests ORDER BY FRequestTime DESC');
+  var obj := json.parse(res);
+
+  if obj.code <> 200 then
+  begin
+    writeln('{"code":500,"msg":"api.queryFailed"}');
+    exit;
+  end;
+
+  var ret := json.NewObject;
+  ret.code := 200;
+  // 显式构建数据，确保字段名正确传递
+  var arr := json.NewArray;
+  for var i := 0 to obj.data.length() - 1 do
+  begin
+    var item := json.NewObject;
+    item.FID := obj.data[i].FID;
+    item.FUsername := obj.data[i].FUsername;
+    item.FEmail := obj.data[i].FEmail;
+    item.FStatus := obj.data[i].FStatus;
+    item.FRequestTime := obj.data[i].FRequestTime;
+    arr.Add(item);
+  end;
+  ret.data := arr;
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;
