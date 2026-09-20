@@ -1,0 +1,51 @@
+pDisk 语言文件清单 / Language File Manifest
+============================================
+国家/语言 | 文件名 | 说明
+
+السعودية (العربية) | ar.json | 阿拉伯语翻译
+Беларусь (Беларуская) | be.json | 白俄罗斯语翻译
+বাংলাদেশ (বাংলা) | bn.json | 孟加拉语翻译
+བོད་ (བོད་སྐད་) | bo.json | 藏语翻译
+Česká republika (Čeština) | cs.json | 捷克语翻译
+Danmark (Dansk) | da.json | 丹麦语翻译
+Deutschland (Deutsch) | de.json | 德语翻译
+Ελλάδα (Ελληνικά) | el.json | 希腊语翻译
+English | en.json | 英语翻译（通用）
+España (Español) | es.json | 西班牙语翻译
+ایران (فارسی) | fa.json | 波斯语翻译
+Suomi (Suomi) | fi.json | 芬兰语翻译
+France (Français) | fr.json | 法语翻译（通用）
+ભારત (ગુજરાતી) | gu.json | 古吉拉特语翻译
+ישראל (עברית) | he.json | 希伯来语翻译
+भारत (हिन्दी) | hi.json | 印地语翻译
+Magyarország (Magyar) | hu.json | 匈牙利语翻译
+Indonesia (Bahasa Indonesia) | id.json | 印尼语翻译
+Ísland (Íslenska) | is.json | 冰岛语翻译
+Italia (Italiano) | it.json | 意大利语翻译
+日本 (日本語) | ja.json | 日语翻译
+ಭಾರತ (ಕನ್ನಡ) | kn.json | 卡纳达语翻译
+대한민국 (한국어) | ko.json | 韩语翻译（通用）
+ഭാരതം (മലയാളം) | ml.json | 马拉雅拉姆语翻译
+ᠮᠣᠩᠭᠣᠯ ᠤᠯᠤᠰ (Монгол) | mn.json | 蒙古语翻译
+भारत (मराठी) | mr.json | 马拉地语翻译
+Norge (Norsk Bokmål) | nb.json | 挪威语翻译
+Nederland (Nederlands) | nl.json | 荷兰语翻译
+ଭାରତ (ଓଡ଼ିଆ) | or.json | 奥里亚语翻译
+ਭਾਰਤ (ਪੰਜਾਬੀ) | pa.json | 旁遮普语翻译
+Polska (Polski) | pl.json | 波兰语翻译
+Brasil (Português) | pt-BR.json | 巴西葡萄牙语翻译
+România (Română) | ro.json | 罗马尼亚语翻译
+Россия (Русский) | ru.json | 俄语翻译
+भारतम् (संस्कृतम्) | sa.json | 梵语翻译
+Sverige (Svenska) | sv.json | 瑞典语翻译
+இந்தியா (தமிழ்) | ta.json | 泰米尔语翻译
+భారతదేశం (తెలుగు) | te.json | 泰卢固语翻译
+ประเทศไทย (ไทย) | th.json | 泰语翻译
+Türkiye (Türkçe) | tr.json | 土耳其语翻译
+شىنجاڭ (ئۇيغۇرچە) | ug.json | 维吾尔语翻译
+Україна (Українська) | uk.json | 乌克兰语翻译
+پاکستان (اردو) | ur.json | 乌尔都语翻译
+Việt Nam (Tiếng Việt) | vi.json | 越南语翻译
+中国 (简体中文) | zh-CN.json | 简体中文翻译
+中国香港 (繁体中文) | zh-HK.json | 繁体中文翻译（香港）
+中国台湾 (繁体中文) | zh-TW.json | 繁体中文翻译（台湾）
