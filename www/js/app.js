@@ -37,6 +37,12 @@ function applyLanguage() {
     var key = phs[i].getAttribute('data-i18n-placeholder');
     phs[i].placeholder = t(key);
   }
+  // Apply data-i18n-title (title attribute)
+  var tls = document.querySelectorAll('[data-i18n-title]');
+  for (var i = 0; i < tls.length; i++) {
+    var key = tls[i].getAttribute('data-i18n-title');
+    tls[i].title = t(key);
+  }
   // Update page title
   document.title = t('app.title');
 }
