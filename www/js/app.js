@@ -560,12 +560,10 @@ function updateNavVisibility() {
 
 // =================================================================
 // Upload (shared logic — used by home upload area AND upload dialog)
-// 设计：上传 session 提升为全局 _uploadSession，与 DOM 解耦；
+// 设计：上传进度提升为全局 _uploadCounters（跨批次累计计数）与
+//       _activeUploadCounters（进行中批次数），与 DOM 解耦；
 //       上传对话框 DOM 常驻，仅切换 display，显示/隐藏不中断进行中的上传。
 // =================================================================
-
-// 全局上传 session（一次上传的生命周期）
-window._uploadSession = null;
 
 // 计算当前上传目标目录的绝对路径
 // - files 页 + _currentDir 有值：返回当前目录绝对路径
@@ -586,27 +584,27 @@ function startUpload(files, dir) {
   var token = getToken();
   if (!token) { showToast(t('toast.pleaseLogin')); navigateTo('login'); return; }
 
-  var queueEl = document.getElementById('uploadQueue');
-  var summaryEl = document.getElementById('uploadSummary');
-  // 若首页上传区不可用（未渲染），回退到对话框 DOM
-  if (!queueEl || queueEl.offsetParent === null) {
-    queueEl = document.getElementById('uploadDialogQueue');
-    summaryEl = document.getElementById('uploadDialogSummary');
+  // 容器：始终用 dialog 容器（首页上传区已废弃）
+  var queueEl = document.getElementById('uploadDialogQueue');
+  var summaryEl = document.getElementById('uploadDialogSummary');
+
+  // 跨批次累计计数：用独立的全局对象维护，不随 session 清空而丢失
+  // window._uploadCounters: { total, done, failed }（跨所有批次累计）
+  if (!window._uploadCounters) {
+    window._uploadCounters = { total: 0, done: 0, failed: 0 };
+  }
+  // 本批次 total 累进全局 total
+  window._uploadCounters.total += files.length;
+
+  // 仅在无任何进行中批次（_activeUploadCounters 为 0）时清空列表
+  // 用 _activeUploadCounters 跟踪"正在上传中的批次"数量，避免 setTimeout 置 null 的竞态
+  if (!window._activeUploadCounters || window._activeUploadCounters === 0) {
+    queueEl.innerHTML = '';
   }
 
   var total = files.length;
   var done = 0, failed = 0;
   var uploadState = { currentRate: 0 };
-
-  // 全局 session（保存当前上传目标 UI 引用，供 dialog 隐藏/显示时复用）
-  window._uploadSession = {
-    queueEl: queueEl,
-    summaryEl: summaryEl,
-    dir: dir || ''
-  };
-
-  // 构建队列 UI
-  queueEl.innerHTML = '';
   var items = [];
   for (var i = 0; i < total; i++) {
     var f = files[i];
@@ -618,6 +616,10 @@ function startUpload(files, dir) {
     queueEl.appendChild(div);
     items.push({ el: div, file: f, statusEl: div.querySelector('.uq-status'), barEl: div.querySelector('.uq-bar-fill') });
   }
+
+  // 本批次活跃计数（用于跟踪本批次是否还有未完成文件）
+  if (!window._activeUploadCounters) window._activeUploadCounters = 0;
+  window._activeUploadCounters++;
 
   updateSummary();
 
@@ -632,7 +634,8 @@ function startUpload(files, dir) {
   function updateFabBadge() {
     var badge = document.getElementById('uploadFabBadge');
     if (!badge) return;
-    var pending = total - done - failed;
+    var c = window._uploadCounters;
+    var pending = (c.total - c.done - c.failed);
     if (pending > 0) {
       badge.textContent = pending;
       badge.style.display = '';
@@ -642,9 +645,13 @@ function startUpload(files, dir) {
   }
 
   function updateSummary() {
-    var pending = total - done - failed;
+    var c = window._uploadCounters;
+    var totalAll = c.total;
+    var doneAll = c.done;
+    var failedAll = c.failed;
+    var pending = totalAll - doneAll - failedAll;
     summaryEl.style.display = 'block';
-    var txt = t('upload.completedCount', { done: done, total: total });
+    var txt = t('upload.completedCount', { done: doneAll, total: totalAll });
     if (pending > 0) txt += t('upload.remaining', { remaining: pending });
     if (uploadState.currentRate > 0) txt += ' ' + formatRate(uploadState.currentRate);
     summaryEl.textContent = txt;
@@ -655,18 +662,37 @@ function startUpload(files, dir) {
   var idx = 0;
   function uploadNext() {
     if (idx >= total) {
-      summaryEl.textContent = t('upload.allDone', { n: total });
-      showToast(t('upload.complete', { done: done, failed: failed }));
+      // 本批次完成，先刷新列表进度与角标
+      var c = window._uploadCounters;
+      var totalAll = c.total;
+      var doneAll = c.done;
+      summaryEl.textContent = t('upload.completedCount', { done: doneAll, total: totalAll });
       loadRecentFiles();
       updateFabBadge();
-      // 全部完成后清空 session 引用（DOM 保留供下次复用，进度显示为"全部完成"）
-      setTimeout(function() { if (window._uploadSession) window._uploadSession = null; }, 3000);
+      // 本批次活跃计数减一
+      window._activeUploadCounters--;
+      // 只有列表中所有批次全部完成才提示一次（原设计：整列表完成才提示）
+      if (window._activeUploadCounters <= 0) {
+        window._activeUploadCounters = 0;
+        showToast(t('upload.complete', { done: doneAll, failed: c.failed }));
+        // 全部完成后延迟重置计数器并清空列表
+        setTimeout(function() {
+          if (window._activeUploadCounters <= 0) {
+            window._uploadCounters = { total: 0, done: 0, failed: 0 };
+            queueEl.innerHTML = '';
+            summaryEl.style.display = 'none';
+          }
+        }, 3000);
+      }
       return;
     }
     items[idx].statusEl.textContent = t('upload.uploading');
     items[idx].statusEl.className = 'uq-status';
     uploadOne(items[idx], token, dir, uploadState, updateSummary, function(success) {
-      if (success) { done++; } else { failed++; }
+      // 单文件完成，累进全局计数
+      var c = window._uploadCounters;
+      if (success) { c.done += 1; }
+      else { c.failed += 1; }
       idx++;
       updateSummary();
       uploadNext();
