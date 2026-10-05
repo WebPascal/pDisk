@@ -159,6 +159,10 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 
 > `+` add · `>` fix · `-` remove · `^` adjust
 
+### 1.11
+- `>` Fix the issue with the upload floating button handling the title attribute;
+- `>` Fixed issues in the upload feature where the file list was overwritten, counts were inaccurate, files were uploaded repeatedly, and the completion notification showed incorrect counts.
+
 ### 1.10
 - `>` Fixed user admin "allow registration" checkbox not reflecting database config;
 - `>` Fixed settings table write failure when key value was empty;
