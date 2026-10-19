@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "الرفع إلى المجلد الجذري",
   "upload.fab.label": "رفع",
   "upload.dialog.title": "رفع",
-  "btn.close": "إغلاق"
+  "btn.close": "إغلاق",
+  "dl.fab.label": "تحميل",
+  "dl.dialog.title": "تحميل",
+  "dl.clearAll": "مسح الكل",
+  "dl.empty": "لا توجد تنزيلات",
+  "dl.queued": "في قائمة الانتظار",
+  "dl.done": "تم",
+  "dl.failed": "فشل",
+  "dl.cancelled": "ملغي",
+  "dl.cancel": "إلغاء",
+  "dl.retry": "إعادة المحاولة",
+  "dl.remove": "إزالة",
+  "dl.doneCount": "{n} تم",
+  "dl.failedCount": "{n} فشل"
 }

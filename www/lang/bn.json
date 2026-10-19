@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "মূল ডিরেক্টরিতে আপলোড করুন",
   "upload.fab.label": "আপলোড",
   "upload.dialog.title": "আপলোড",
-  "btn.close": "বন্ধ করুন"
+  "btn.close": "বন্ধ করুন",
+  "dl.fab.label": "ডাউনলোড",
+  "dl.dialog.title": "ডাউনলোড",
+  "dl.clearAll": "মুছুন",
+  "dl.empty": "কোনো ডাউনলোড নেই",
+  "dl.queued": "অপেক্ষা",
+  "dl.done": "সম্পন্ন",
+  "dl.failed": "ব্যর্থ",
+  "dl.cancelled": "বাতিল",
+  "dl.cancel": "বাতিল করুন",
+  "dl.retry": "আবার চেষ্টা",
+  "dl.remove": "সরান",
+  "dl.doneCount": "{n} সম্পন্ন",
+  "dl.failedCount": "{n} ব্যর্থ"
 }

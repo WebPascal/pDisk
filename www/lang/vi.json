@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Tải lên thư mục gốc",
   "upload.fab.label": "Tải lên",
   "upload.dialog.title": "Tải lên",
-  "btn.close": "Đóng"
+  "btn.close": "Đóng",
+  "dl.fab.label": "Tải xuống",
+  "dl.dialog.title": "Tải xuống",
+  "dl.clearAll": "Xóa",
+  "dl.empty": "Không có tệp tải xuống",
+  "dl.queued": "Trong hàng đợi",
+  "dl.done": "Hoàn thành",
+  "dl.failed": "Thất bại",
+  "dl.cancelled": "Đã hủy",
+  "dl.cancel": "Hủy",
+  "dl.retry": "Thử lại",
+  "dl.remove": "Xóa",
+  "dl.doneCount": "{n} đã hoàn thành",
+  "dl.failedCount": "{n} thất bại"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "جڑ فولڈر میں اپ لوڈ کریں",
   "upload.fab.label": "اپ لوڈ",
   "upload.dialog.title": "اپ لوڈ",
-  "btn.close": "بند کریں"
+  "btn.close": "بند کریں",
+  "dl.fab.label": "ڈاؤن لوڈ",
+  "dl.dialog.title": "ڈاؤن لوڈ",
+  "dl.clearAll": "صاف کریں",
+  "dl.empty": "کوئی ڈاؤن لوڈ نہیں",
+  "dl.queued": "قطار میں",
+  "dl.done": "مکمل",
+  "dl.failed": "ناکام",
+  "dl.cancelled": "منسوخ ہو گیا",
+  "dl.cancel": "منسوخ کریں",
+  "dl.retry": "دوبارہ کوشش",
+  "dl.remove": "ہٹائیں",
+  "dl.doneCount": "{n} مکمل",
+  "dl.failedCount": "{n} ناکام"
 }

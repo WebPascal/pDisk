@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "मूल-गृहं उपरि सङ्करोतु",
   "upload.fab.label": "उपरिक्रुध्यः",
   "upload.dialog.title": "उपरिक्रुध्यः",
-  "btn.close": "बन्धः"
+  "btn.close": "बन्धः",
+  "dl.fab.label": "अवतारयतु",
+  "dl.dialog.title": "अवतारयतु",
+  "dl.clearAll": "शून्यकृत्य",
+  "dl.empty": "अवतरणानि न सन्ति",
+  "dl.queued": "श्रेणौ",
+  "dl.done": "सिद्धम्",
+  "dl.failed": "असिद्धम्",
+  "dl.cancelled": "निरसितम्",
+  "dl.cancel": "निरस्यताम्",
+  "dl.retry": "पुनः प्रयत्नः",
+  "dl.remove": "उन्मूल्यताम्",
+  "dl.doneCount": "{n} सिद्धानि",
+  "dl.failedCount": "{n} असिद्धानि"
 }

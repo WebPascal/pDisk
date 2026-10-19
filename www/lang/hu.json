@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Feltöltés a gyökérkönyvtárba",
   "upload.fab.label": "Feltöltés",
   "upload.dialog.title": "Feltöltés",
-  "btn.close": "Bezárás"
+  "btn.close": "Bezárás",
+  "dl.fab.label": "Letöltés",
+  "dl.dialog.title": "Letöltés",
+  "dl.clearAll": "Üresítés",
+  "dl.empty": "Nincsenek letöltések",
+  "dl.queued": "Sorban",
+  "dl.done": "Kész",
+  "dl.failed": "Sikertelen",
+  "dl.cancelled": "Megszakítva",
+  "dl.cancel": "Megse",
+  "dl.retry": "Újra",
+  "dl.remove": "Eltávolítás",
+  "dl.doneCount": "{n} kész",
+  "dl.failedCount": "{n} sikertelen"
 }

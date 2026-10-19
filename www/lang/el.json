@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Ανέλιξη στον κατάλογο ρίζας",
   "upload.fab.label": "Ανέλιξη",
   "upload.dialog.title": "Ανέλιξη",
-  "btn.close": "Κλείσιμο"
+  "btn.close": "Κλείσιμο",
+  "dl.fab.label": "Λήψη",
+  "dl.dialog.title": "Λήψη",
+  "dl.clearAll": "Καθαρισμός",
+  "dl.empty": "Καμία κατέβαση",
+  "dl.queued": "Σε ουρά",
+  "dl.done": "Ολοκληρώθηκε",
+  "dl.failed": "Απέτυχε",
+  "dl.cancelled": "Ακυρώθηκε",
+  "dl.cancel": "Ακύρωση",
+  "dl.retry": "Δοκιμή ξανά",
+  "dl.remove": "Αφαίρεση",
+  "dl.doneCount": "{n} ολοκληρώθηκαν",
+  "dl.failedCount": "{n} απέτυχαν"
 }

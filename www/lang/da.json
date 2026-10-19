@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Upload til rodmappe",
   "upload.fab.label": "Upload",
   "upload.dialog.title": "Upload",
-  "btn.close": "Luk"
+  "btn.close": "Luk",
+  "dl.fab.label": "Download",
+  "dl.dialog.title": "Download",
+  "dl.clearAll": "Ryd",
+  "dl.empty": "Ingen downloads",
+  "dl.queued": "I kø",
+  "dl.done": "Færdig",
+  "dl.failed": "Fejlet",
+  "dl.cancelled": "Annulleret",
+  "dl.cancel": "Annuller",
+  "dl.retry": "Prøv igen",
+  "dl.remove": "Fjern",
+  "dl.doneCount": "{n} færdig",
+  "dl.failedCount": "{n} fejlet"
 }

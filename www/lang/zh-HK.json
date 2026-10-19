@@ -300,5 +300,18 @@
   "upload.dialog.dirHint": "上傳去：{path}",
   "upload.dialog.rootHint": "上傳去：根目錄",
   "upload.fab.label": "上傳",
-  "upload.dialog.title": "上傳"
+  "upload.dialog.title": "上傳",
+  "dl.fab.label": "下載",
+  "dl.dialog.title": "下載",
+  "dl.clearAll": "清空",
+  "dl.empty": "暫無下載",
+  "dl.queued": "排隊中",
+  "dl.done": "完成",
+  "dl.failed": "失敗",
+  "dl.cancelled": "已取消",
+  "dl.cancel": "取消",
+  "dl.retry": "重詩",
+  "dl.remove": "移除",
+  "dl.doneCount": "{n} 個完成",
+  "dl.failedCount": "{n} 個失敗"
 }

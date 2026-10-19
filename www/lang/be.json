@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Запам'ятаць у каранёвы каталог",
   "upload.fab.label": "Запам'ятаць",
   "upload.dialog.title": "Запам'ятованне",
-  "btn.close": "Закрыць"
+  "btn.close": "Закрыць",
+  "dl.fab.label": "Спампаваць",
+  "dl.dialog.title": "Спампаваць",
+  "dl.clearAll": "Ачысці",
+  "dl.empty": "Ня заваленняў",
+  "dl.queued": "У чарзе",
+  "dl.done": "Гатова",
+  "dl.failed": "Памылка",
+  "dl.cancelled": "Адменена",
+  "dl.cancel": "Адмяніць",
+  "dl.retry": "Паўтор",
+  "dl.remove": "Выдаліць",
+  "dl.doneCount": "{n} завершана",
+  "dl.failedCount": "{n} памылак"
 }

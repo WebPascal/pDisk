@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "ئاساسىي قاتلامغا يۈكلەش",
   "upload.fab.label": "يۈكلەش",
   "upload.dialog.title": "يۈكلەش",
-  "btn.close": "تاقاش"
+  "btn.close": "تاقاش",
+  "dl.fab.label": "چۈشۈرۈش",
+  "dl.dialog.title": "چۈشۈرۈش",
+  "dl.clearAll": "تازىلاش",
+  "dl.empty": "چۈشۈرۈش يوق",
+  "dl.queued": "سىرتا",
+  "dl.done": "تامام",
+  "dl.failed": "مەغلۇپ",
+  "dl.cancelled": "بىكار قىلىندى",
+  "dl.cancel": "بىكار قىلىش",
+  "dl.retry": "قايتا سىناش",
+  "dl.remove": "ئۆچۈرۈش",
+  "dl.doneCount": "{n} تامام",
+  "dl.failedCount": "{n} مەغلۇپ"
 }

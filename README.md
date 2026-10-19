@@ -8,7 +8,7 @@ A lightweight self-hosted cloud disk system built on WebPascal 5. Supports file 
 
 - **User registration & login** — JWT token authentication
 - **File upload** — drag-and-drop, multi-file queue, progress display, original filename preservation
-- **File download** — by original filename
+- **File download** — by original filename, with download progress list, multi-file concurrent download, and auto-save on completion
 - **File sharing** — password-protected share links, view/download/play from share page
 - **Directory management** — create, browse, delete; tree view for cross-directory copy
 - **File preview** — images, audio, video, PDF, DOCX, XLSX, PPTX, common text files
@@ -158,6 +158,13 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 ## Release History
 
 > `+` add · `>` fix · `-` remove · `^` adjust
+
+### 1.12
+- `+` Added a download floating button at the bottom-right (above the upload button); tap to open the download task list;
+- `+` The download task list shows real-time progress for each file (percentage, downloaded size, download speed);
+- `+` Multiple files can download simultaneously; extras are queued automatically and files are saved on completion;
+- `+` Tasks can be cancelled, failed items retried, removed individually, or cleared all at once;
+- `^` File downloads across the drive, share, and admin pages now go through the unified download list with live progress.
 
 ### 1.11
 - `>` Fix the issue with the upload floating button handling the title attribute;

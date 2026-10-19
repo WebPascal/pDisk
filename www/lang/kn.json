@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "ಮೂಲ ಡಿರೆಕ್ಟರಿಯಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
   "upload.fab.label": "ಅಪ್‌ಲೋಡ್",
   "upload.dialog.title": "ಅಪ್‌ಲೋಡ್",
-  "btn.close": "ಮುಚ್ಚಿ"
+  "btn.close": "ಮುಚ್ಚಿ",
+  "dl.fab.label": "ಡೌನ್‌ಲೋಡ್",
+  "dl.dialog.title": "ಡೌನ್‌ಲೋಡ್",
+  "dl.clearAll": "ಅಳಿಸಿಹಾಕಿ",
+  "dl.empty": "ಯಾವುದೂ ಡೌನ್‌ಲೋಡ್ ಇಲ್ಲ",
+  "dl.queued": "ಕಾಯುವಲ್ಲಿ",
+  "dl.done": "ಪೂರ್ಣ",
+  "dl.failed": "ವಿಫಲ",
+  "dl.cancelled": "ರದ್ದು",
+  "dl.cancel": "ರದ್ದುಮಾಡಿ",
+  "dl.retry": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+  "dl.remove": "ತೆಗೆದುಹಾಕಿ",
+  "dl.doneCount": "{n} ಪೂರ್ಣ",
+  "dl.failedCount": "{n} ವಿಫಲ"
 }

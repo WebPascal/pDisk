@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "രൂട്ട് ഡയറക്ടറിയിൽ അപ്ലോഡ് ചെയ്യുക",
   "upload.fab.label": "അപ്ലോഡ്",
   "upload.dialog.title": "അപ്ലോഡ്",
-  "btn.close": "അടക്കുക"
+  "btn.close": "അടക്കുക",
+  "dl.fab.label": "ഡൗൺലോഡ്",
+  "dl.dialog.title": "ഡൗൺലോഡ്",
+  "dl.clearAll": "ഖാലി",
+  "dl.empty": "ഡൗൺലോഡുകൾ ഇല്ല",
+  "dl.queued": "ക്യൂവിലെ",
+  "dl.done": "പൂർണം",
+  "dl.failed": "പരാജയം",
+  "dl.cancelled": "റദ്ദാക്കി",
+  "dl.cancel": "റദ്ദാക്കുക",
+  "dl.retry": "വീണ്ടും ശ്രമിക്കുക",
+  "dl.remove": "ഓഴിക്കുക",
+  "dl.doneCount": "{n} പൂർണം",
+  "dl.failedCount": "{n} പരാജയം"
 }

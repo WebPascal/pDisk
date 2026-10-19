@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Hlaða inn í rótarmappa",
   "upload.fab.label": "Hlaða inn",
   "upload.dialog.title": "Hlaða inn",
-  "btn.close": "Loka"
+  "btn.close": "Loka",
+  "dl.fab.label": "Sækja",
+  "dl.dialog.title": "Sækja",
+  "dl.clearAll": "Hreinsa",
+  "dl.empty": "Engin niðurhal",
+  "dl.queued": "Í biðröð",
+  "dl.done": "Klært",
+  "dl.failed": "Tókst ekki",
+  "dl.cancelled": "Hætt við",
+  "dl.cancel": "Hætta við",
+  "dl.retry": "Reyna aftur",
+  "dl.remove": "Fjarlægja",
+  "dl.doneCount": "{n} klárt",
+  "dl.failedCount": "{n} mistókst"
 }

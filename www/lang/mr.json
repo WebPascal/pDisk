@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "मुख्य फोल्डरमध्ये अपलोड करा",
   "upload.fab.label": "अपलोड",
   "upload.dialog.title": "अपलोड",
-  "btn.close": "बनद् करा"
+  "btn.close": "बनद् करा",
+  "dl.fab.label": "डाउनलोड",
+  "dl.dialog.title": "डाउनलोड",
+  "dl.clearAll": "सफ करा",
+  "dl.empty": "कोणतेही डाउनलोड नाही",
+  "dl.queued": "रेंगेत",
+  "dl.done": "पूर्ण",
+  "dl.failed": "निष्फळ",
+  "dl.cancelled": "रद्द झाले",
+  "dl.cancel": "रद्द करा",
+  "dl.retry": "पुन्हा प्रयत्न",
+  "dl.remove": "काढा",
+  "dl.doneCount": "{n} पूर्ण",
+  "dl.failedCount": "{n} निष्फळ"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "بارگذاری در پوشهٔ اصلی",
   "upload.fab.label": "بارگذاری",
   "upload.dialog.title": "بارگذاری",
-  "btn.close": "بستن"
+  "btn.close": "بستن",
+  "dl.fab.label": "دانلود",
+  "dl.dialog.title": "دانلود",
+  "dl.clearAll": "پاک‌سازی",
+  "dl.empty": "دانلودی وجود ندارد",
+  "dl.queued": "در صف",
+  "dl.done": "انجام شد",
+  "dl.failed": "ناموفق",
+  "dl.cancelled": "لغو شد",
+  "dl.cancel": "لغو",
+  "dl.retry": "تلاش دوباره",
+  "dl.remove": "حذف",
+  "dl.doneCount": "{n} انجام شد",
+  "dl.failedCount": "{n} ناموفق"
 }

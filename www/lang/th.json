@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "อัปโหลดไปยังโฟลเดอร์หลัก",
   "upload.fab.label": "อัปโหลด",
   "upload.dialog.title": "อัปโหลด",
-  "btn.close": "ปิด"
+  "btn.close": "ปิด",
+  "dl.fab.label": "ดาวน์โหลด",
+  "dl.dialog.title": "ดาวน์โหลด",
+  "dl.clearAll": "ล้าง",
+  "dl.empty": "ไม่มีการดาวน์โหลด",
+  "dl.queued": "รอคิว",
+  "dl.done": "เสร็จสิ้น",
+  "dl.failed": "ล้มเหลว",
+  "dl.cancelled": "ยกเลิกแล้ว",
+  "dl.cancel": "ยกเลิก",
+  "dl.retry": "ลองใหม่",
+  "dl.remove": "ลบ",
+  "dl.doneCount": "{n} เสร็จสิ้น",
+  "dl.failedCount": "{n} ล้มเหลว"
 }

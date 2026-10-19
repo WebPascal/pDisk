@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Subir al directorio raíz",
   "upload.fab.label": "Subir",
   "upload.dialog.title": "Subir",
-  "btn.close": "Cerrar"
+  "btn.close": "Cerrar",
+  "dl.fab.label": "Descargar",
+  "dl.dialog.title": "Descargar",
+  "dl.clearAll": "Vaciar",
+  "dl.empty": "Sin descargas",
+  "dl.queued": "En cola",
+  "dl.done": "Completado",
+  "dl.failed": "Fallido",
+  "dl.cancelled": "Cancelado",
+  "dl.cancel": "Cancelar",
+  "dl.retry": "Reintentar",
+  "dl.remove": "Quitar",
+  "dl.doneCount": "{n} completados",
+  "dl.failedCount": "{n} fallidos"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "루트 디렉터리로 업로드",
   "upload.fab.label": "업로드",
   "upload.dialog.title": "업로드",
-  "btn.close": "닫기"
+  "btn.close": "닫기",
+  "dl.fab.label": "다운로드",
+  "dl.dialog.title": "다운로드",
+  "dl.clearAll": "비우기",
+  "dl.empty": "다운로드 항목 없음",
+  "dl.queued": "대기 중",
+  "dl.done": "완료",
+  "dl.failed": "실패",
+  "dl.cancelled": "취소됨",
+  "dl.cancel": "취소",
+  "dl.retry": "재시도",
+  "dl.remove": "삭제",
+  "dl.doneCount": "{n}개 완료",
+  "dl.failedCount": "{n}개 실패"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Téléverser dans le répertoire racine",
   "upload.fab.label": "Téléverser",
   "upload.dialog.title": "Téléverser",
-  "btn.close": "Fermer"
+  "btn.close": "Fermer",
+  "dl.fab.label": "Télécharger",
+  "dl.dialog.title": "Télécharger",
+  "dl.clearAll": "Vider",
+  "dl.empty": "Aucun téléchargement",
+  "dl.queued": "En file",
+  "dl.done": "Terminé",
+  "dl.failed": "Échec",
+  "dl.cancelled": "Annulé",
+  "dl.cancel": "Annuler",
+  "dl.retry": "Réessayer",
+  "dl.remove": "Retirer",
+  "dl.doneCount": "{n} terminés",
+  "dl.failedCount": "{n} en échec"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Unggah ke folder root",
   "upload.fab.label": "Unggah",
   "upload.dialog.title": "Unggah",
-  "btn.close": "Tutup"
+  "btn.close": "Tutup",
+  "dl.fab.label": "Unduh",
+  "dl.dialog.title": "Unduh",
+  "dl.clearAll": "Bersihkan",
+  "dl.empty": "Tidak ada unduhan",
+  "dl.queued": "Dalam antrean",
+  "dl.done": "Selesai",
+  "dl.failed": "Gagal",
+  "dl.cancelled": "Dibatalkan",
+  "dl.cancel": "Batalkan",
+  "dl.retry": "Ulangi",
+  "dl.remove": "Hapus",
+  "dl.doneCount": "{n} selesai",
+  "dl.failedCount": "{n} gagal"
 }

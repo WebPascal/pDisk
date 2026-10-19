@@ -300,5 +300,18 @@
   "admin.quotaUpdated": "用户配额已更新",
   "admin.quotaInvalid": "配额值无效",
   "admin.setQuota": "设置配额",
-  "admin.enterQuota": "请输入配额（GB）"
+  "admin.enterQuota": "请输入配额（GB）",
+  "dl.fab.label": "下载",
+  "dl.dialog.title": "下载",
+  "dl.clearAll": "清空",
+  "dl.empty": "暂无下载",
+  "dl.queued": "排队中",
+  "dl.done": "完成",
+  "dl.failed": "失败",
+  "dl.cancelled": "已取消",
+  "dl.cancel": "取消",
+  "dl.retry": "重试",
+  "dl.remove": "移除",
+  "dl.doneCount": "{n} 个完成",
+  "dl.failedCount": "{n} 个失败"
 }

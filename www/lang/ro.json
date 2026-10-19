@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Încarcă în directorul rădăcină",
   "upload.fab.label": "Încarcă",
   "upload.dialog.title": "Încarcă",
-  "btn.close": "Închide"
+  "btn.close": "Închide",
+  "dl.fab.label": "Descarcă",
+  "dl.dialog.title": "Descarcă",
+  "dl.clearAll": "Golește",
+  "dl.empty": "Nicio descărcare",
+  "dl.queued": "În coadă",
+  "dl.done": "Finalizat",
+  "dl.failed": "Eșuat",
+  "dl.cancelled": "Anulat",
+  "dl.cancel": "Anulează",
+  "dl.retry": "Reîncearcă",
+  "dl.remove": "Elimină",
+  "dl.doneCount": "{n} finalizate",
+  "dl.failedCount": "{n} eșuate"
 }

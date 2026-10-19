@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Ladda upp till rotmappen",
   "upload.fab.label": "Ladda upp",
   "upload.dialog.title": "Ladda upp",
-  "btn.close": "Stäng"
+  "btn.close": "Stäng",
+  "dl.fab.label": "Ladda ner",
+  "dl.dialog.title": "Ladda ner",
+  "dl.clearAll": "Töm",
+  "dl.empty": "Inga nedladdningar",
+  "dl.queued": "I kö",
+  "dl.done": "Klar",
+  "dl.failed": "Misslyckades",
+  "dl.cancelled": "Avbruten",
+  "dl.cancel": "Avbryt",
+  "dl.retry": "Försök igen",
+  "dl.remove": "Ta bort",
+  "dl.doneCount": "{n} klara",
+  "dl.failedCount": "{n} misslyckades"
 }

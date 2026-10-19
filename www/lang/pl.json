@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Prześlij do katalogu głównego",
   "upload.fab.label": "Prześlij",
   "upload.dialog.title": "Prześlij",
-  "btn.close": "Zamknij"
+  "btn.close": "Zamknij",
+  "dl.fab.label": "Pobierz",
+  "dl.dialog.title": "Pobierz",
+  "dl.clearAll": "Wyczyść",
+  "dl.empty": "Brak pobierań",
+  "dl.queued": "W kolejce",
+  "dl.done": "Gotowe",
+  "dl.failed": "Nie powiodło się",
+  "dl.cancelled": "Anulowane",
+  "dl.cancel": "Anuluj",
+  "dl.retry": "Ponów",
+  "dl.remove": "Usuń",
+  "dl.doneCount": "{n} ukończono",
+  "dl.failedCount": "{n} nie powiodło się"
 }

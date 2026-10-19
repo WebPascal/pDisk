@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Upload to: root directory",
   "upload.fab.label": "Upload",
   "upload.dialog.title": "Upload",
+  "dl.fab.label": "Downloads",
+  "dl.dialog.title": "Downloads",
+  "dl.clearAll": "Clear",
+  "dl.empty": "No downloads",
+  "dl.queued": "Queued",
+  "dl.done": "Done",
+  "dl.failed": "Failed",
+  "dl.cancelled": "Cancelled",
+  "dl.cancel": "Cancel",
+  "dl.retry": "Retry",
+  "dl.remove": "Remove",
+  "dl.doneCount": "{n} done",
+  "dl.failedCount": "{n} failed",
   "btn.close": "Close"
 }

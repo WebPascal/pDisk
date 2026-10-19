@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "మూల డైరెక్టరీలో అప్‌లోడ్ చేయండి",
   "upload.fab.label": "అప్‌లోడ్",
   "upload.dialog.title": "అప్‌లోడ్",
-  "btn.close": "మూసివేయండి"
+  "btn.close": "మూసివేయండి",
+  "dl.fab.label": "డౌన్‌లోడ్",
+  "dl.dialog.title": "డౌన్‌లోడ్",
+  "dl.clearAll": "శుభ్రం చేయండి",
+  "dl.empty": "డౌన్‌లోడ్లు లేవు",
+  "dl.queued": "వరుసలో",
+  "dl.done": "పూర్తి",
+  "dl.failed": "విఫలం",
+  "dl.cancelled": "రద్దు",
+  "dl.cancel": "రద్దు చేయండి",
+  "dl.retry": "మళ్లీ ప్రయత్నించండి",
+  "dl.remove": "తీసేయండి",
+  "dl.doneCount": "{n} పూర్తి",
+  "dl.failedCount": "{n} విఫలం"
 }

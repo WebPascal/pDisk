@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "རྩ་ཁྲོམ་དུ་བཏང་ཆོག",
   "upload.fab.label": "བཏང་ཆོག",
   "upload.dialog.title": "བཏང་ཆོག",
-  "btn.close": "ཁ་རྒྱབ།"
+  "btn.close": "ཁ་རྒྱབ།",
+  "dl.fab.label": "ཕབ་ལེན",
+  "dl.dialog.title": "ཕབ་ལེན",
+  "dl.clearAll": "སྦྱོར་ལས།",
+  "dl.empty": "ཕབ་ལེན་མེད།",
+  "dl.queued": "སྒོམ་ཡོད།",
+  "dl.done": "ལེགས་འགྱུར་བ་",
+  "dl.failed": "ཕམ་པ།",
+  "dl.cancelled": "ཚོད་ལན་བསླེབ་",
+  "dl.cancel": "བསླེབ།",
+  "dl.retry": "བསྐྱར་ཞུ་བ་",
+  "dl.remove": "བཏུབ་པ།",
+  "dl.doneCount": "{n} ལེགས་འགྱུར།",
+  "dl.failedCount": "{n} ཕམ་པ།"
 }

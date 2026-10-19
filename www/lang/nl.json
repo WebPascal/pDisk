@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Uploaden naar de hoofdmap",
   "upload.fab.label": "Uploaden",
   "upload.dialog.title": "Uploaden",
-  "btn.close": "Sluiten"
+  "btn.close": "Sluiten",
+  "dl.fab.label": "Downloaden",
+  "dl.dialog.title": "Downloaden",
+  "dl.clearAll": "Leegmaken",
+  "dl.empty": "Geen downloads",
+  "dl.queued": "In wachtrij",
+  "dl.done": "Voltooid",
+  "dl.failed": "Mislukt",
+  "dl.cancelled": "Geannuleerd",
+  "dl.cancel": "Annuleren",
+  "dl.retry": "Opnieuw proberen",
+  "dl.remove": "Verwijderen",
+  "dl.doneCount": "{n} voltooid",
+  "dl.failedCount": "{n} mislukt"
 }

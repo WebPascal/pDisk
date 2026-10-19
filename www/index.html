@@ -409,6 +409,9 @@
 <!-- 悬浮分享按钮（位于 body 层，确保可拖动且不被其他元素遮挡） -->
 <button id="shareFab" onclick="openShareDialog()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
 
+<!-- 悬浮下载按钮（位于 body 层，可拖动；点击进入下载任务对话框） -->
+<button id="downloadFab" onclick="toggleDownloadDialog()" title="下载" data-i18n-title="dl.fab.label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span id="downloadFabBadge" class="upload-fab-badge" style="display:none;"></span></button>
+
 <!-- 常驻上传对话框（与音频播放器同样模式：DOM 常驻、仅切换 display，显示/隐藏不中断进行中的上传） -->
 <div class="upload-dialog-overlay" id="uploadDialogOverlay" style="display:none;">
   <div class="upload-dialog">
@@ -429,6 +432,24 @@
     </div>
     <div class="share-dialog-footer">
       <button class="btn btn-outline btn-sm" onclick="toggleUploadDialog(false)" data-i18n="btn.close">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 常驻下载任务对话框（与上传对话框同样模式：DOM 常驻、仅切换 display，显示/隐藏不中断进行中的下载） -->
+<div class="upload-dialog-overlay" id="downloadDialogOverlay" style="display:none;">
+  <div class="upload-dialog">
+    <div class="share-dialog-header">
+      <div class="share-dialog-title"><svg class="icon" style="vertical-align:middle;margin-right:4px;"><use href="#icon-download"/></svg> <span data-i18n="dl.dialog.title">下载</span></div>
+      <span class="share-dialog-close" onclick="toggleDownloadDialog(false)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>
+    </div>
+    <div class="share-dialog-body">
+      <div class="dl-queue" id="dlQueue"></div>
+      <div class="dl-summary" id="dlSummary" style="display:none;"></div>
+    </div>
+    <div class="share-dialog-footer">
+      <button class="btn btn-outline btn-sm" onclick="dlClearAll()" data-i18n="dl.clearAll">清空</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleDownloadDialog(false)" data-i18n="btn.close">关闭</button>
     </div>
   </div>
 </div>
@@ -506,10 +527,10 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pptxviewjs/dist/PptxViewJS.min.js"></script>
 <script src="js/app.js"></script>
 </body>

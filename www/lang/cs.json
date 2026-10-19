@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Nahrát do kořenového adresáře",
   "upload.fab.label": "Nahrát",
   "upload.dialog.title": "Nahrát",
-  "btn.close": "Zavřít"
+  "btn.close": "Zavřít",
+  "dl.fab.label": "Stáhnout",
+  "dl.dialog.title": "Stáhnout",
+  "dl.clearAll": "Vymazat",
+  "dl.empty": "Žádná stahování",
+  "dl.queued": "V pořadí",
+  "dl.done": "Hotovo",
+  "dl.failed": "Selhalo",
+  "dl.cancelled": "Zrušeno",
+  "dl.cancel": "Zrušit",
+  "dl.retry": "Znovu",
+  "dl.remove": "Odebrat",
+  "dl.doneCount": "{n} hotovo",
+  "dl.failedCount": "{n} selhalo"
 }

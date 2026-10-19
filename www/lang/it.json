@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Carica nella directory radice",
   "upload.fab.label": "Carica",
   "upload.dialog.title": "Carica",
-  "btn.close": "Chiudi"
+  "btn.close": "Chiudi",
+  "dl.fab.label": "Scarica",
+  "dl.dialog.title": "Scarica",
+  "dl.clearAll": "Svuota",
+  "dl.empty": "Nessun download",
+  "dl.queued": "In coda",
+  "dl.done": "Completato",
+  "dl.failed": "Fallito",
+  "dl.cancelled": "Annullato",
+  "dl.cancel": "Annulla",
+  "dl.retry": "Riprova",
+  "dl.remove": "Rimuovi",
+  "dl.doneCount": "{n} completati",
+  "dl.failedCount": "{n} falliti"
 }

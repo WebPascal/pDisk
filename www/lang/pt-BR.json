@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Enviar para o diretório raiz",
   "upload.fab.label": "Enviar",
   "upload.dialog.title": "Enviar",
-  "btn.close": "Fechar"
+  "btn.close": "Fechar",
+  "dl.fab.label": "Baixar",
+  "dl.dialog.title": "Baixar",
+  "dl.clearAll": "Limpar",
+  "dl.empty": "Nenhum download",
+  "dl.queued": "Na fila",
+  "dl.done": "Concluído",
+  "dl.failed": "Falhou",
+  "dl.cancelled": "Cancelado",
+  "dl.cancel": "Cancelar",
+  "dl.retry": "Tentar novamente",
+  "dl.remove": "Remover",
+  "dl.doneCount": "{n} concluídos",
+  "dl.failedCount": "{n} falharam"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Lataa juurikansioon",
   "upload.fab.label": "Lataa",
   "upload.dialog.title": "Lataa",
-  "btn.close": "Sulje"
+  "btn.close": "Sulje",
+  "dl.fab.label": "Lataa",
+  "dl.dialog.title": "Lataa",
+  "dl.clearAll": "Tyhjennä",
+  "dl.empty": "Ei latauksia",
+  "dl.queued": "Jonossa",
+  "dl.done": "Valmis",
+  "dl.failed": "Epäonnistui",
+  "dl.cancelled": "Peruttu",
+  "dl.cancel": "Peruuta",
+  "dl.retry": "Yritä uudelleen",
+  "dl.remove": "Poista",
+  "dl.doneCount": "{n} valmis",
+  "dl.failedCount": "{n} epäonnistui"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "ମୂଳ ଡିରେକ୍ଟୋରୀରେ ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ",
   "upload.fab.label": "ଅପ୍‌ଲୋଡ୍",
   "upload.dialog.title": "ଅପ୍‌ଲୋଡ୍",
-  "btn.close": "ବନନ୍ତୁ"
+  "btn.close": "ବନନ୍ତୁ",
+  "dl.fab.label": "ଡାଉନଲୋଡ୍",
+  "dl.dialog.title": "ଡାଉନଲୋଡ୍",
+  "dl.clearAll": "ସଫା କରନ୍ତୁ",
+  "dl.empty": "କୌଣସି ଡାଉନଲୋଡ୍ ନାହିଁ",
+  "dl.queued": "ସଂକେତରେ",
+  "dl.done": "ସମ୍ପୂର୍ଣ୍ଣ",
+  "dl.failed": "ବିଫଳ",
+  "dl.cancelled": "ରଦ୍ଡ ହୋଇଛି",
+  "dl.cancel": "ରଦ୍ଡ",
+  "dl.retry": "ପୁନର୍ବେ ପ୍ରୟାସ",
+  "dl.remove": "ବାହାର କରନ୍ତୁ",
+  "dl.doneCount": "{n} ସମ୍ପୂର୍ଣ୍ଣ",
+  "dl.failedCount": "{n} ବିଫଳ"
 }

@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "העלאה לתיקיית שורש",
   "upload.fab.label": "העלאה",
   "upload.dialog.title": "העלאה",
-  "btn.close": "סגור"
+  "btn.close": "סגור",
+  "dl.fab.label": "הורד",
+  "dl.dialog.title": "הורד",
+  "dl.clearAll": "נקה",
+  "dl.empty": "אין הורדות",
+  "dl.queued": "בתור",
+  "dl.done": "הושלם",
+  "dl.failed": "נכשל",
+  "dl.cancelled": "בוטל",
+  "dl.cancel": "ביטול",
+  "dl.retry": "נסה שוב",
+  "dl.remove": "הסר",
+  "dl.doneCount": "{n} הושלמו",
+  "dl.failedCount": "{n} נכשלו"
 }

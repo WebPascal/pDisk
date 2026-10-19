@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Hochladen in das Stammverzeichnis",
   "upload.fab.label": "Hochladen",
   "upload.dialog.title": "Hochladen",
-  "btn.close": "Schließen"
+  "btn.close": "Schließen",
+  "dl.fab.label": "Download",
+  "dl.dialog.title": "Download",
+  "dl.clearAll": "Leeren",
+  "dl.empty": "Keine Downloads",
+  "dl.queued": "In Warteschlange",
+  "dl.done": "Fertig",
+  "dl.failed": "Fehlgeschlagen",
+  "dl.cancelled": "Abgebrochen",
+  "dl.cancel": "Abbrechen",
+  "dl.retry": "Erneut versuchen",
+  "dl.remove": "Entfernen",
+  "dl.doneCount": "{n} fertig",
+  "dl.failedCount": "{n} fehlgeschlagen"
 }

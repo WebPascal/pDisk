@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Last opp til rotmappe",
   "upload.fab.label": "Last opp",
   "upload.dialog.title": "Last opp",
-  "btn.close": "Lukk"
+  "btn.close": "Lukk",
+  "dl.fab.label": "Last ned",
+  "dl.dialog.title": "Last ned",
+  "dl.clearAll": "Tøm",
+  "dl.empty": "Ingen nedlastinger",
+  "dl.queued": "I kø",
+  "dl.done": "Fullført",
+  "dl.failed": "Feilet",
+  "dl.cancelled": "Avbrutt",
+  "dl.cancel": "Avbryt",
+  "dl.retry": "Prøv igjen",
+  "dl.remove": "Fjern",
+  "dl.doneCount": "{n} fullført",
+  "dl.failedCount": "{n} feilet"
 }

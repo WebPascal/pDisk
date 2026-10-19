@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Kök dizine yükle",
   "upload.fab.label": "Yükle",
   "upload.dialog.title": "Yükle",
-  "btn.close": "Kapat"
+  "btn.close": "Kapat",
+  "dl.fab.label": "İndir",
+  "dl.dialog.title": "İndir",
+  "dl.clearAll": "Temizle",
+  "dl.empty": "İndirme yok",
+  "dl.queued": "Sırada",
+  "dl.done": "Tamamlandı",
+  "dl.failed": "Başarısız",
+  "dl.cancelled": "İptal edildi",
+  "dl.cancel": "İptal",
+  "dl.retry": "Tekrar dene",
+  "dl.remove": "Kaldır",
+  "dl.doneCount": "{n} tamamlandı",
+  "dl.failedCount": "{n} başarısız"
 }

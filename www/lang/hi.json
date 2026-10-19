@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "जड़ फ़ोल्डर में अपलोड करें",
   "upload.fab.label": "अपलोड",
   "upload.dialog.title": "अपलोड",
-  "btn.close": "बनद् करेण"
+  "btn.close": "बनद् करेण",
+  "dl.fab.label": "डाउनलोड",
+  "dl.dialog.title": "डाउनलोड",
+  "dl.clearAll": "सफ़ करें",
+  "dl.empty": "कोई डाउनलोड नहीं",
+  "dl.queued": "कतार में",
+  "dl.done": "पूरा",
+  "dl.failed": "असफल",
+  "dl.cancelled": "रद्द हुआ",
+  "dl.cancel": "रद्द करें",
+  "dl.retry": "पुनः प्रयास",
+  "dl.remove": "हटाएँ",
+  "dl.doneCount": "{n} पूरे",
+  "dl.failedCount": "{n} असफल"
 }

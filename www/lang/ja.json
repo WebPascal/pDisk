@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "ルートディレクトリにアップロード",
   "upload.fab.label": "アップロード",
   "upload.dialog.title": "アップロード",
-  "btn.close": "閉じる"
+  "btn.close": "閉じる",
+  "dl.fab.label": "ダウンロード",
+  "dl.dialog.title": "ダウンロード",
+  "dl.clearAll": "すべて削除",
+  "dl.empty": "ダウンロードはありません",
+  "dl.queued": "待機中",
+  "dl.done": "完了",
+  "dl.failed": "失敗",
+  "dl.cancelled": "キャンセル済み",
+  "dl.cancel": "キャンセル",
+  "dl.retry": "再試行",
+  "dl.remove": "削除",
+  "dl.doneCount": "{n} 件完了",
+  "dl.failedCount": "{n} 件失敗"
 }

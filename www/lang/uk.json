@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Завантажити у кореневий каталог",
   "upload.fab.label": "Завантажити",
   "upload.dialog.title": "Завантаження",
-  "btn.close": "Закрити"
+  "btn.close": "Закрити",
+  "dl.fab.label": "Завантажити",
+  "dl.dialog.title": "Завантажити",
+  "dl.clearAll": "Очистити",
+  "dl.empty": "Немає завантажень",
+  "dl.queued": "У черзі",
+  "dl.done": "Готово",
+  "dl.failed": "Не вдалося",
+  "dl.cancelled": "Скасовано",
+  "dl.cancel": "Скасувати",
+  "dl.retry": "Повторити",
+  "dl.remove": "Видалити",
+  "dl.doneCount": "{n} завершено",
+  "dl.failedCount": "{n} не вдалося"
 }

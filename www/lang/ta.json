@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "மூல கோப்புறையில் பதிவேற்று",
   "upload.fab.label": "பதிவேற்று",
   "upload.dialog.title": "பதிவேற்று",
-  "btn.close": "மூடு"
+  "btn.close": "மூடு",
+  "dl.fab.label": "பதிவிறக்கு",
+  "dl.dialog.title": "பதிவிறக்கு",
+  "dl.clearAll": "அழி",
+  "dl.empty": "பதிவிறக்கங்கள் இல்லை",
+  "dl.queued": "கோலில்",
+  "dl.done": "முடிந்தது",
+  "dl.failed": "தோல்வி",
+  "dl.cancelled": "ரத்து",
+  "dl.cancel": "ரத்து செய்",
+  "dl.retry": "மீண்டும் முயற்சி",
+  "dl.remove": "நீக்கு",
+  "dl.doneCount": "{n} முடிந்தது",
+  "dl.failedCount": "{n} தோல்வி"
 }

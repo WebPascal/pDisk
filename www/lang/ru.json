@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Загрузка в корневой каталог",
   "upload.fab.label": "Загрузить",
   "upload.dialog.title": "Загрузка",
-  "btn.close": "Закрыть"
+  "btn.close": "Закрыть",
+  "dl.fab.label": "Скачать",
+  "dl.dialog.title": "Скачать",
+  "dl.clearAll": "Очистить",
+  "dl.empty": "Нет загрузок",
+  "dl.queued": "В очереди",
+  "dl.done": "Готово",
+  "dl.failed": "Не удалось",
+  "dl.cancelled": "Отменено",
+  "dl.cancel": "Отмена",
+  "dl.retry": "Повторить",
+  "dl.remove": "Удалить",
+  "dl.doneCount": "{n} завершено",
+  "dl.failedCount": "{n} не удалось"
 }

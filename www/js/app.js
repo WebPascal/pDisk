@@ -411,6 +411,7 @@ function updateNavVisibility() {
   var bottomNav = document.getElementById('bottomNav');
   var shareFab = document.getElementById('shareFab');
   var uploadFab = document.getElementById('uploadFab');
+  var downloadFab = document.getElementById('downloadFab');
   var hasToken = !!getToken();
   if (getIsAdmin() && hasToken) {
     adminNav.classList.remove('hidden');
@@ -421,9 +422,17 @@ function updateNavVisibility() {
   if (bottomNav) {
     bottomNav.style.display = hasToken ? 'flex' : 'none';
   }
-  // 登录时显示悬浮分享/上传按钮，未登录时隐藏
+  // 登录时显示悬浮分享/上传/下载按钮，未登录时隐藏
   if (shareFab) {
     shareFab.style.display = hasToken ? 'flex' : 'none';
+    // 登录成功（FAB 由隐藏转为可见）后重新定位，避免使用隐藏时的 0 尺寸算出的错误坐标
+    if (hasToken && window.relocateShareFab) {
+      if (window.requestAnimationFrame) {
+        window.requestAnimationFrame(function() { window.relocateShareFab(); });
+      } else {
+        window.relocateShareFab();
+      }
+    }
   }
   if (uploadFab) {
     uploadFab.style.display = hasToken ? 'flex' : 'none';
@@ -435,6 +444,30 @@ function updateNavVisibility() {
       } else {
         window.relocateUploadFab();
       }
+    }
+  }
+  if (downloadFab) {
+    downloadFab.style.display = hasToken ? 'flex' : 'none';
+    // 登录成功（FAB 由隐藏转为可见）后重新定位，避免使用隐藏时的 0 尺寸算出的错误坐标
+    if (hasToken && window.relocateDownloadFab) {
+      if (window.requestAnimationFrame) {
+        window.requestAnimationFrame(function() { window.relocateDownloadFab(); });
+      } else {
+        window.relocateDownloadFab();
+      }
+    }
+    // 未登录时隐藏下载对话框并清空任务
+    var dlOverlay = document.getElementById('downloadDialogOverlay');
+    if (dlOverlay) dlOverlay.style.display = 'none';
+    if (!hasToken && window.dlClearAll) window.dlClearAll();
+  }
+  // 返回顶部按钮：登录成功后重新定位（#app 容器此时为主页面，宽度与悬浮按钮一致）
+  var btt = document.getElementById('backToTop');
+  if (btt && hasToken && window.relocateBackToTop) {
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(function() { window.relocateBackToTop(); });
+    } else {
+      window.relocateBackToTop();
     }
   }
   // 未登录时隐藏常驻上传对话框
@@ -2102,44 +2135,25 @@ function batchPlay() {
   }
 }
 
-// 批量下载：利用 setTimeout 间隔2秒为勾选的文件创建带 download 的 a 链接并激活下载，避免浏览器多文件下载授权提示
+// 批量下载：加入下载任务队列，由下载管理器统一并发（最多 5 个）+ 进度 + 完成后自动保存
 function batchDownload() {
   var paths = Array.from(_selectedFiles);
   if (paths.length === 0) return;
-  showToast(t('files.batchDownloadStart', { n: paths.length }));
-  var i = 0;
-  function downloadNext() {
-    if (i >= paths.length) return;
+  var items = [];
+  for (var i = 0; i < paths.length; i++) {
     var p = paths[i];
     var name = _selectedFileNames[p] || p.split('/').pop();
-    var a = document.createElement('a');
-    a.href = window.location.origin + encodeURI(p);
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    i++;
-    if (i < paths.length) {
-      setTimeout(downloadNext, 2000);
-    }
+    items.push({ name: name, url: p });
   }
-  downloadNext();
+  showToast(t('files.batchDownloadStart', { n: items.length }));
+  downloadTasks(items);
 }
 
-// 单文件下载
+// 单文件下载：加入下载任务队列，由下载管理器统一管理（带进度，完成后自动保存）
 function downloadFile(filePath, fileName) {
   showToast(t('files.batchDownloadStart', { n: 1 }));
-  var a = document.createElement('a');
-  // 如果 filePath 已经是完整URL（分享页面传入），直接使用；否则拼 origin
-  if (filePath.indexOf('http://') === 0 || filePath.indexOf('https://') === 0) {
-    a.href = filePath;
-  } else {
-    a.href = window.location.origin + encodeURI(filePath);
-  }
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  // 如果 filePath 已经是完整URL（分享页面传入），直接使用；否则由管理器拼 origin
+  downloadTasks([{ name: fileName || filePath.split('/').pop(), url: filePath }]);
 }
 
 // ===== Share Feature =====
@@ -2721,7 +2735,7 @@ function shareBatchPlay() {
   }
 }
 
-// 分享页批量下载：利用 setTimeout 间隔1.5秒为勾选的文件创建带 download 的 a 链接并激活下载
+// 分享页批量下载：加入下载任务队列，由下载管理器统一并发 + 进度 + 完成后自动保存
 function shareBatchDownload() {
   var items = document.querySelectorAll('#svFileList li.selected');
   if (items.length === 0) return;
@@ -2736,21 +2750,7 @@ function shareBatchDownload() {
   }
   if (files.length === 0) return;
   showToast(t('files.batchDownloadStart', { n: files.length }));
-  var idx = 0;
-  function downloadNext() {
-    if (idx >= files.length) return;
-    var a = document.createElement('a');
-    a.href = files[idx].url;
-    a.download = files[idx].name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    idx++;
-    if (idx < files.length) {
-      setTimeout(downloadNext, 1500);
-    }
-  }
-  downloadNext();
+  downloadTasks(files);
 }
 
 function copyLink(url) {
@@ -3568,28 +3568,18 @@ function adminBatchPlay() {
   }
 }
 
-// 批量下载：利用 setTimeout 间隔1.5秒为勾选的文件创建带 download 的 a 链接并激活下载，避免浏览器多文件下载授权提示
+// 管理页批量下载：加入下载任务队列，由下载管理器统一并发 + 进度 + 完成后自动保存
 function adminBatchDownload() {
   var paths = Array.from(_adminSelectedFiles);
   if (paths.length === 0) return;
-  showToast(t('files.batchDownloadStart', { n: paths.length }));
-  var i = 0;
-  function downloadNext() {
-    if (i >= paths.length) return;
+  var items = [];
+  for (var i = 0; i < paths.length; i++) {
     var p = paths[i];
     var name = _adminSelectedFileNames[p] || p.split('/').pop();
-    var a = document.createElement('a');
-    a.href = window.location.origin + encodeURI(p);
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    i++;
-    if (i < paths.length) {
-      setTimeout(downloadNext, 1500);
-    }
+    items.push({ name: name, url: p });
   }
-  downloadNext();
+  showToast(t('files.batchDownloadStart', { n: items.length }));
+  downloadTasks(items);
 }
 
 function adminBatchDelete() {
@@ -3662,10 +3652,78 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
   }
 })();
 (function(){
-  var btn=document.getElementById('backToTop');
-  window.addEventListener('scroll',function(){
-    if(window.scrollY>300){btn.style.display='flex';setTimeout(function(){btn.style.opacity='1'},0)}
-    else{btn.style.opacity='0';setTimeout(function(){btn.style.display='none'},300)}
+  var btn = document.getElementById('backToTop');
+  if (!btn) return;
+
+  var DEFAULT_RIGHT = 30;
+  var DEFAULT_BOTTOM = 80;
+
+  function getSize() {
+    return { w: btn.offsetWidth || 44, h: btn.offsetHeight || 44 };
+  }
+  function getDefaultPos() {
+    var s = getSize();
+    var isMobile = window.innerWidth <= 480;
+    if (isMobile) {
+      return {
+        left: Math.max(8, window.innerWidth - DEFAULT_RIGHT - s.w),
+        top: Math.max(8, window.innerHeight - DEFAULT_BOTTOM - s.h)
+      };
+    }
+    // 桌面端：与 upload/download FAB 一致，贴 app 容器右边缘外侧
+    var appEl = document.getElementById('app');
+    var appRect = appEl ? appEl.getBoundingClientRect() : null;
+    if (appRect) {
+      var left = appRect.right + 12;
+      if (left + s.w > window.innerWidth - 8) left = appRect.left - s.w - 12;
+      if (left < 8) left = window.innerWidth - DEFAULT_RIGHT - s.w;
+      var top = window.innerHeight - DEFAULT_BOTTOM - s.h;
+      return { left: Math.max(8, left), top: Math.max(8, top) };
+    }
+    return {
+      left: Math.max(8, window.innerWidth - DEFAULT_RIGHT - s.w),
+      top: Math.max(8, window.innerHeight - DEFAULT_BOTTOM - s.h)
+    };
+  }
+  function applyDefaultPos() {
+    var p = getDefaultPos();
+    // 水平方向直接对齐到 FAB 那一列（share/upload/download 都是 position:fixed，
+    // 用 getBoundingClientRect().left 读视口坐标最可靠），避免各自独立读 #app 时
+    // 因执行时机不同（页面加载早期 vs 登录后）算出略偏左的坐标
+    var ref = document.getElementById('shareFab');
+    if (ref && ref.style.display !== 'none') {
+      var r = ref.getBoundingClientRect();
+      if (r.left > 0) p.left = Math.round(r.left);
+    }
+    btn.style.left = p.left + 'px';
+    btn.style.top = p.top + 'px';
+    btn.style.right = 'auto';
+    btn.style.bottom = 'auto';
+  }
+  window.relocateBackToTop = applyDefaultPos;
+
+  // 初始定位
+  applyDefaultPos();
+
+  // 滚动：显示/隐藏 + 显示时重新定位（防止窗口在隐藏期间尺寸变化）
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 300) {
+      applyDefaultPos();
+      btn.style.display = 'flex';
+      setTimeout(function() { btn.style.opacity = '1'; }, 0);
+    } else {
+      btn.style.opacity = '0';
+      setTimeout(function() { btn.style.display = 'none'; }, 300);
+    }
+  });
+
+  // 窗口尺寸变化时重新定位（若按钮当前可见）
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      if (btn.style.display !== 'none') applyDefaultPos();
+    }, 200);
   });
 })();
 
@@ -3738,36 +3796,48 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
     var w = fab.offsetWidth || 44, h = fab.offsetHeight || 44;
     return left >= 0 && top >= 0 && left + w <= window.innerWidth && top + h <= window.innerHeight;
   }
-  // 恢复保存的位置（如果无效则使用默认）
-  try {
-    var saved = localStorage.getItem('shareFabPos');
+  // 重新定位分享 FAB（登录成功后调用，此时 FAB 已可见，尺寸可正确测量）
+  window.relocateShareFab = function() {
     var usedDefault = true;
-    if (saved) {
-      var p = JSON.parse(saved);
-      if (p && typeof p.x === 'number' && typeof p.y === 'number' && p.x >= 0 && p.y >= 0) {
-        // 检查是否在视口内且不与返回顶部按钮重叠
-        if (isInViewport(p.x, p.y) && !isOverlappingBackToTop(p.x, p.y)) {
-          fab.style.left = p.x + 'px';
-          fab.style.top = p.y + 'px';
-          fab.style.right = 'auto';
-          fab.style.bottom = 'auto';
-          usedDefault = false;
+    try {
+      var saved = localStorage.getItem('shareFabPos');
+      if (saved) {
+        var p = JSON.parse(saved);
+        if (p && typeof p.x === 'number' && typeof p.y === 'number' && p.x >= 0 && p.y >= 0) {
+          // 检查是否在视口内且不与返回顶部按钮重叠
+          if (isInViewport(p.x, p.y) && !isOverlappingBackToTop(p.x, p.y)) {
+            fab.style.left = p.x + 'px';
+            fab.style.top = p.y + 'px';
+            fab.style.right = 'auto';
+            fab.style.bottom = 'auto';
+            usedDefault = false;
+          }
         }
       }
-    }
+    } catch (e) {}
     if (usedDefault) {
       var def = getDefaultPos();
       fab.style.left = def.left + 'px';
       fab.style.top = def.top + 'px';
       fab.style.right = 'auto';
       fab.style.bottom = 'auto';
+      try { localStorage.removeItem('shareFabPos'); } catch (e) {}
     }
-  } catch (e) {
-    var def = getDefaultPos();
-    fab.style.left = def.left + 'px';
-    fab.style.top = def.top + 'px';
+  };
+
+  // 恢复持久化位置（带视口校验；若元素当前隐藏则清除脏坐标，登录成功后由 relocateShareFab 重新定位）
+  var fabVisible = fab.offsetParent !== null;
+  if (fabVisible) {
+    window.relocateShareFab();
+  } else {
+    // 元素当前不可见（未登录被隐藏），尺寸不可靠，清除可能用 0 尺寸算出的脏坐标，避免登录后定位到错误位置
+    try { localStorage.removeItem('shareFabPos'); } catch (e) {}
+    var def0 = getDefaultPos();
+    fab.style.left = def0.left + 'px';
+    fab.style.top = def0.top + 'px';
     fab.style.right = 'auto';
     fab.style.bottom = 'auto';
+    fab._needsRelocate = true;
   }
   var dragging = false, moved = false, dragStartX = 0, dragStartY = 0, startLeft = 0, startTop = 0, activePointerId = null;
   function onDown(e) {
@@ -4054,6 +4124,753 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
       fab.style.right = 'auto';
       fab.style.bottom = 'auto';
       try { localStorage.removeItem('uploadFabPos'); } catch (e) {}
+    }, 200);
+  });
+})();
+
+// =================================================================
+// Download Manager — 并发下载队列（最多 5 个）+ 进度 + 自动保存
+// 取代旧的 <a download> 间隔触发方式，统一走 fetch + ReadableStream
+// =================================================================
+(function() {
+  // 桌面端保持 5 并发；手机端限制为 1（按序单文件下载，避免 iOS/Android 多文件
+  // <a download> 触发分享面板/下载管理器混乱，同时控制内存占用）
+  var _dlIsMobile = (typeof window !== 'undefined' && window.innerWidth <= 480);
+  var CONCURRENCY = _dlIsMobile ? 1 : 5;
+  var _dlQueue = [];       // 等待中的任务
+  var _dlTasks = [];       // 所有任务（含进行中 / 已完成 / 失败）
+  var _dlActive = 0;       // 当前并发数
+  var _dlTaskSeq = 0;
+
+  function dlStatusOf() {
+    var active = 0, done = 0, failed = 0, cancelled = 0;
+    for (var i = 0; i < _dlTasks.length; i++) {
+      var st = _dlTasks[i].status;
+      if (st === 'downloading' || st === 'queued' || st === 'paused') active++;
+      else if (st === 'done') done++;
+      else if (st === 'failed') failed++;
+      else if (st === 'cancelled') cancelled++;
+    }
+    return { active: active, done: done, failed: failed, cancelled: cancelled, total: _dlTasks.length };
+  }
+
+  // 规范化 URL：相对路径补 origin；绝对路径保留
+  function _normalizeUrl(url) {
+    if (url.indexOf('http://') === 0 || url.indexOf('https://') === 0) return url;
+    return window.location.origin + encodeURI(url);
+  }
+
+  // 人类可读文件大小
+  function dlFmtBytes(n) {
+    if (n < 1024) return n + ' B';
+    var units = ['KB', 'MB', 'GB'];
+    var i = -1;
+    do { n /= 1024; i++; } while (n >= 1024 && i < units.length - 1);
+    return n.toFixed(1) + ' ' + units[i];
+  }
+  window.dlFmtBytes = dlFmtBytes;
+
+  // 人类可读速度
+  function dlFmtSpeed(bps) {
+    return dlFmtBytes(bps) + '/s';
+  }
+
+  // 启动/追加下载任务（items: [{name, url}]）
+  window.downloadTasks = function(items) {
+    if (!items || items.length === 0) return;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      var id = ++_dlTaskSeq;
+      var task = {
+        id: id,
+        name: it.name || it.url.split('/').pop() || 'file',
+        url: _normalizeUrl(it.url),
+        status: 'queued',     // queued | downloading | done | failed | cancelled
+        received: 0,
+        total: 0,             // 0 = 未知（无 Content-Length）
+        speed: 0,
+        blobUrl: null,
+        error: '',
+        _chunks: []
+      };
+      _dlQueue.push(task);
+      _dlTasks.push(task);
+    }
+    dlUpdateBadge();
+    dlRender();
+    dlPump();
+    dlPersist();
+  };
+
+  // 取任务出队并开始下载
+  function dlPump() {
+    while (_dlActive < CONCURRENCY && _dlQueue.length > 0) {
+      var task = _dlQueue.shift();
+      _dlActive++;
+      task._settlePending = true;
+      dlStartTask(task);
+    }
+    dlRender();
+  }
+
+  // 任务结束（完成/失败/取消/移除）时安全扣减并发槽位，保证只扣一次
+  function dlSettle(task) {
+    if (!task._settlePending) return;
+    task._settlePending = false;
+    if (task._settleApplied) return;
+    task._settleApplied = true;
+    _dlActive = Math.max(0, _dlActive - 1);
+  }
+
+  // 开始单个下载
+  function dlStartTask(task) {
+    task.status = 'downloading';
+    task.speed = 0;
+    task.error = '';
+    if (!task._chunks) task._chunks = [];
+    if (typeof task.received !== 'number') task.received = 0;
+    dlUpdateBadge();
+    dlRender();
+
+    var controller = new AbortController();
+    task._abort = controller;
+    var lastReceived = task.received;
+    var lastTime = Date.now();
+
+    var speedTimer = setInterval(function() {
+      if (task.status !== 'downloading') return;
+      var now = Date.now();
+      var dt = (now - lastTime) / 1000;
+      if (dt > 0) task.speed = (task.received - lastReceived) / dt;
+      lastReceived = task.received;
+      lastTime = now;
+      dlPatchTask(task);
+    }, 300);
+
+    // 断点续传：已下载过部分则带 Range 头
+    var headers = {};
+    if (task.received > 0) {
+      headers['Range'] = 'bytes=' + task.received + '-';
+    }
+
+    fetch(task.url, { signal: controller.signal, headers: headers })
+      .then(function(res) {
+        // 服务端不支持 Range（200 而非 206）：重置从头开始
+        if (res.status === 200 && task.received > 0) {
+          task._chunks = [];
+          task.received = 0;
+          lastReceived = 0;
+        }
+        if (!res.ok && res.status !== 206) throw new Error('HTTP ' + res.status);
+        // 解析文件总大小
+        var clen = res.headers.get('Content-Length');
+        var cr = res.headers.get('Content-Range');
+        if (cr && cr.indexOf('/') >= 0) {
+          var t = parseInt(cr.split('/').pop(), 10);
+          if (!isNaN(t)) task.total = t;
+        } else if (clen) {
+          if (res.status === 206) {
+            task.total = task.received + parseInt(clen, 10);
+          } else {
+            task.total = parseInt(clen, 10);
+          }
+        }
+        if (!res.body) {
+          return res.arrayBuffer().then(function(buf) {
+            task._chunks.push(buf);
+            task.received += buf.byteLength;
+            if (!task.total) task.total = task.received;
+            dlRender();
+            return buf;
+          });
+        }
+        var reader = res.body.getReader();
+        return new Promise(function(resolve, reject) {
+          function onRead() {
+            reader.read().then(function(result) {
+              if (result.done) { resolve(null); return; }
+              task._chunks.push(result.value);
+              task.received += result.value.length;
+              dlScheduleProgress(task);
+              onRead();
+            }, reject);
+          }
+          onRead();
+        });
+      })
+      .then(function() {
+        clearInterval(speedTimer);
+        var blob = new Blob(task._chunks, { type: 'application/octet-stream' });
+        if (task.total === 0) task.total = task.received;
+        task.status = 'done';
+        task.speed = 0;
+        task._chunks = null;
+        task.received = 0;
+        task.blobUrl = URL.createObjectURL(blob);
+        dlTriggerSave(task);
+        dlSettle(task);
+        dlUpdateBadge();
+        dlRender();
+        dlPump();
+        dlPersist();
+      })
+      .catch(function(err) {
+        clearInterval(speedTimer);
+        if (err && err.name === 'AbortError') {
+          if (task._paused) {
+            task.status = 'paused';
+            task._paused = false;
+          } else {
+            task.status = 'cancelled';
+          }
+        } else {
+          task.status = 'failed';
+          task.error = err.message || 'download failed';
+        }
+        task.speed = 0;
+        dlSettle(task);
+        dlUpdateBadge();
+        dlRender();
+        dlPersist();
+        // 无论暂停/取消/失败/完成，都尝试填充空闲槽位（排队的自动补位）
+        dlPump();
+      });
+  }
+
+  // 暂停下载中任务（保持已接收数据，释放并发槽位，支持 Range 断点续传恢复）
+  window.dlPauseTask = function(id) {
+    var task = null;
+    for (var i = 0; i < _dlTasks.length; i++) if (_dlTasks[i].id === id) { task = _dlTasks[i]; break; }
+    if (!task || task.status !== 'downloading') return;
+    task._paused = true;
+    if (task._abort) task._abort.abort();
+    dlSettle(task);
+    dlUpdateBadge();
+    dlRender();
+    dlPersist();
+  };
+
+  // 恢复暂停/排队的任务（带 Range 头断点续传）
+  window.dlResumeTask = function(id) {
+    var task = null;
+    for (var i = 0; i < _dlTasks.length; i++) if (_dlTasks[i].id === id) { task = _dlTasks[i]; break; }
+    if (!task || (task.status !== 'paused' && task.status !== 'queued')) return;
+    // 统一回到排队态；真正何时启动（转为 downloading）由 dlPump/dlStartTask 决定
+    task.status = 'queued';
+    // 暂停过的任务已不在队列中，需要重新入队；已排队的保持不动
+    var inQueue = false;
+    for (var j = 0; j < _dlQueue.length; j++) { if (_dlQueue[j].id === id) { inQueue = true; break; } }
+    if (!inQueue) _dlQueue.push(task);
+    // 重置并发结算标志，使再次启动时能正确占用/释放槽位
+    task._settlePending = false;
+    task._settleApplied = false;
+    dlUpdateBadge();
+    dlRender();
+    dlPump();
+    dlPersist();
+  };
+
+  // 触发浏览器保存（自动保存，不经过下载管理器，不受 5 文件并发限制）
+  function dlTriggerSave(task) {
+    var a = document.createElement('a');
+    a.href = task.blobUrl;
+    a.download = task.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // 延迟释放 blobUrl（浏览器需要时间读取）
+    setTimeout(function() {
+      if (task.blobUrl) { URL.revokeObjectURL(task.blobUrl); task.blobUrl = null; }
+    }, 60000);
+  }
+
+  // 取消任务
+  window.dlCancelTask = function(id) {
+    var task = null;
+    for (var i = 0; i < _dlTasks.length; i++) if (_dlTasks[i].id === id) { task = _dlTasks[i]; break; }
+    if (!task) return;
+    if (task.status === 'queued') {
+      // 从队列中移除
+      for (var j = _dlQueue.length - 1; j >= 0; j--) {
+        if (_dlQueue[j].id === id) { _dlQueue.splice(j, 1); break; }
+      }
+      task.status = 'cancelled';
+    } else if (task.status === 'downloading') {
+      if (task._abort) task._abort.abort();
+    } else if (task.status === 'paused') {
+      // 暂停态：不持有并发槽位，直接取消，清理内存块
+      task.status = 'cancelled';
+      if (task._chunks) { task._chunks = null; }
+    }
+    dlUpdateBadge();
+    dlRender();
+    dlPersist();
+  };
+
+  // 重试任务（仅 failed / cancelled 可重试）
+  window.dlRetryTask = function(id) {
+    var task = null;
+    for (var i = 0; i < _dlTasks.length; i++) if (_dlTasks[i].id === id) { task = _dlTasks[i]; break; }
+    if (!task) return;
+    // done 也允许重试：用于重新下载已完成文件；failed/cancelled 同理
+    if (task.status !== 'failed' && task.status !== 'cancelled' && task.status !== 'done') return;
+    task.status = 'queued';
+    task.error = '';
+    task.received = 0;
+    task.speed = 0;
+    task.total = 0;
+    if (task._chunks) { task._chunks = null; }
+    if (task.blobUrl) { URL.revokeObjectURL(task.blobUrl); task.blobUrl = null; }
+    // 重置并发结算标志，使重试时能再次占用/释放槽位
+    task._settlePending = false;
+    task._settleApplied = false;
+    _dlQueue.push(task);
+    dlUpdateBadge();
+    dlRender();
+    dlPump();
+    dlPersist();
+  };
+
+  // 移除单个任务（从列表中彻底删除）
+  window.dlRemoveTask = function(id) {
+    var task = null;
+    for (var i = 0; i < _dlTasks.length; i++) if (_dlTasks[i].id === id) { task = _dlTasks[i]; break; }
+    if (!task) return;
+    if (task.status === 'queued') {
+      for (var j = _dlQueue.length - 1; j >= 0; j--) {
+        if (_dlQueue[j].id === id) { _dlQueue.splice(j, 1); break; }
+      }
+      // 未持有并发槽位
+      task._settlePending = false;
+    } else if (task.status === 'downloading') {
+      // 进行中：立即释放槽位，并标记 settled，避免后续中断回调再次扣减
+      if (task._abort) task._abort.abort();
+      dlSettle(task);
+    } else if (task.status === 'paused') {
+      // 暂停态：不持有并发槽位
+      task._settlePending = false;
+    }
+    if (task._chunks) { task._chunks = null; }
+    if (task.blobUrl) URL.revokeObjectURL(task.blobUrl);
+    for (var k = _dlTasks.length - 1; k >= 0; k--) {
+      if (_dlTasks[k].id === id) { _dlTasks.splice(k, 1); break; }
+    }
+    dlUpdateBadge();
+    dlRender();
+    dlPump();
+    dlPersist();
+  };
+
+  // 清空所有任务
+  window.dlClearAll = function() {
+    for (var i = _dlQueue.length - 1; i >= 0; i--) _dlQueue.splice(i, 1);
+    _dlQueue = [];
+    for (var j = 0; j < _dlTasks.length; j++) {
+      var tsk = _dlTasks[j];
+      if (tsk.status === 'downloading') {
+        if (tsk._abort) tsk._abort.abort();
+        dlSettle(tsk);
+      }
+      tsk._settlePending = false;
+      if (tsk._chunks) { tsk._chunks = null; }
+      if (tsk.blobUrl) URL.revokeObjectURL(tsk.blobUrl);
+    }
+    _dlTasks = [];
+    _dlActive = 0;
+    dlUpdateBadge();
+    dlRender();
+    dlPersist();
+  };
+
+  // 更新 FAB 徽章
+  function dlUpdateBadge() {
+    var badge = document.getElementById('downloadFabBadge');
+    var fab = document.getElementById('downloadFab');
+    if (!badge || !fab) return;
+    var s = dlStatusOf();
+    var activeCount = s.active;
+    if (activeCount > 0) {
+      badge.textContent = activeCount;
+      badge.style.display = '';
+      fab.classList.add('has-badge');
+      setTimeout(function() { fab.classList.remove('has-badge'); }, 400);
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  // 渲染任务列表
+  function dlRender() {
+    var container = document.getElementById('dlQueue');
+    var summary = document.getElementById('dlSummary');
+    if (!container) return;
+    if (_dlTasks.length === 0) {
+      container.innerHTML = '<div class="dl-empty">' + t('dl.empty') + '</div>';
+      if (summary) summary.style.display = 'none';
+      return;
+    }
+    var html = '';
+    var activeCount = 0, doneCount = 0, failedCount = 0;
+    for (var i = 0; i < _dlTasks.length; i++) {
+      var task = _dlTasks[i];
+      var st = task.status;
+      var pct = task.total > 0 ? Math.min(100, Math.round(task.received / task.total * 100)) : 0;
+      var stLabel, stCls;
+      if (st === 'queued') { stLabel = t('dl.queued'); stCls = 'queued'; }
+      else if (st === 'downloading') { stLabel = pct + '%'; stCls = 'downloading'; activeCount++; }
+      else if (st === 'paused') { stLabel = pct + '%'; stCls = 'paused'; activeCount++; }
+      else if (st === 'done') { stLabel = t('dl.done'); stCls = 'done'; doneCount++; }
+      else if (st === 'failed') { stLabel = t('dl.failed'); stCls = 'failed'; failedCount++; }
+      else if (st === 'cancelled') { stLabel = t('dl.cancelled'); stCls = 'cancelled'; }
+
+      var metaText = '';
+      if (st === 'downloading') {
+        metaText = dlFmtBytes(task.received) + (task.total > 0 ? ' / ' + dlFmtBytes(task.total) : '') +
+          (task.speed > 0 ? ' · ' + dlFmtSpeed(task.speed) : '');
+      } else if (st === 'paused') {
+        metaText = dlFmtBytes(task.received) + (task.total > 0 ? ' / ' + dlFmtBytes(task.total) : '');
+      } else if (st === 'done') {
+        metaText = dlFmtBytes(task.total || task.received);
+      }
+
+      var actions = '';
+      var xSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      if (st === 'queued' || st === 'downloading' || st === 'paused') {
+        // 暂停/恢复 toggle：放在关闭(X)按钮左边，留间距防误触；无 tooltip、无 i18n
+        var showPause = (st === 'downloading');
+        var toggleSvg = showPause
+          ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/></svg>'
+          : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7 5 19 12 7 19"/></svg>';
+        var toggleFn = showPause ? 'dlPauseTask' : 'dlResumeTask';
+        actions += '<button class="dl-btn dl-btn-pause" onclick="' + toggleFn + '(' + task.id + ')" aria-label="">' + toggleSvg + '</button>';
+        actions += '<button class="dl-btn dl-btn-cancel" onclick="dlCancelTask(' + task.id + ')" title="' + t('dl.cancel') + '">' + xSvg + '</button>';
+      }
+      if (st === 'failed' || st === 'cancelled' || st === 'done') {
+        actions += '<button class="dl-btn dl-btn-retry" onclick="dlRetryTask(' + task.id + ')" title="' + t('dl.retry') + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></button>';
+      }
+      if (st === 'done' || st === 'failed' || st === 'cancelled') {
+        actions += '<button class="dl-btn" onclick="dlRemoveTask(' + task.id + ')" title="' + t('dl.remove') + '">' + xSvg + '</button>';
+      }
+
+      html += '<div class="dl-item" id="dlItem-' + task.id + '">' +
+        '<div class="dl-item-top">' +
+          '<svg class="icon dl-item-icon"><use href="#icon-file"/></svg>' +
+          '<span class="dl-item-name" title="' + escAttr(task.name) + '">' + escHtml(task.name) + '</span>' +
+          '<div class="dl-item-actions">' + actions + '</div>' +
+        '</div>' +
+        '<div class="dl-progress-track"><div class="dl-progress-fill" id="dlFill-' + task.id + '" style="width:' + pct + '%"></div></div>' +
+        '<div class="dl-item-meta">' +
+          '<span id="dlMeta-' + task.id + '">' + (st === 'failed' ? task.error : metaText) + '</span>' +
+          '<span class="dl-status ' + stCls + '" id="dlStatus-' + task.id + '">' + stLabel + '</span>' +
+        '</div>' +
+      '</div>';
+    }
+    container.innerHTML = html;
+    // 摘要行
+    if (summary) {
+      var s = dlStatusOf();
+      if (s.active === 0 && s.total > 0) {
+        var parts = [];
+        if (doneCount > 0) parts.push(t('dl.doneCount', { n: doneCount }));
+        if (failedCount > 0) parts.push(t('dl.failedCount', { n: failedCount }));
+        summary.textContent = parts.join(' · ');
+        summary.style.display = '';
+      } else {
+        summary.style.display = 'none';
+      }
+    }
+  }
+
+  // 轻量进度更新：仅改写单个任务的进度条 / 百分比 / 字节 / 状态文本，避免全量重建 DOM
+  function dlPatchTask(task) {
+    var pct = task.total > 0 ? Math.min(100, Math.round(task.received / task.total * 100)) : 0;
+    var fill = document.getElementById('dlFill-' + task.id);
+    if (fill) fill.style.width = pct + '%';
+    var meta = document.getElementById('dlMeta-' + task.id);
+    if (meta && task.status === 'downloading') {
+      meta.textContent = dlFmtBytes(task.received) + (task.total > 0 ? ' / ' + dlFmtBytes(task.total) : '') +
+        (task.speed > 0 ? ' · ' + dlFmtSpeed(task.speed) : '');
+    }
+    var status = document.getElementById('dlStatus-' + task.id);
+    if (status && task.status === 'downloading') {
+      status.textContent = pct + '%';
+    }
+  }
+  // 每任务独立去抖：把同一宏任务内该任务的多次 read() 合并为一次 DOM 更新
+  function dlScheduleProgress(task) {
+    if (task.status !== 'downloading') return;
+    if (task._progPending) return;
+    task._progPending = true;
+    setTimeout(function() {
+      task._progPending = false;
+      dlPatchTask(task);
+    }, 0);
+  }
+
+  // 打开/关闭下载对话框
+  window.toggleDownloadDialog = function(show) {
+    var overlay = document.getElementById('downloadDialogOverlay');
+    if (!overlay) return;
+    if (show === undefined) show = overlay.style.display === 'none';
+    overlay.style.display = show ? 'flex' : 'none';
+    if (show) dlRender();
+  };
+
+  // 持久化未完成（排队/暂停）任务到 localStorage，页面重载可续
+  function dlPersist() {
+    try {
+      var pending = [];
+      for (var i = 0; i < _dlTasks.length; i++) {
+        var tk = _dlTasks[i];
+        if (tk.status === 'queued' || tk.status === 'paused') {
+          pending.push({ id: tk.id, name: tk.name, url: tk.url, total: tk.total, received: tk.received, status: tk.status });
+        }
+      }
+      if (pending.length === 0) {
+        localStorage.removeItem('dlQueue');
+      } else {
+        localStorage.setItem('dlQueue', JSON.stringify(pending));
+      }
+    } catch (e) {}
+  }
+
+  // 从 localStorage 恢复未完成（排队/暂停）任务
+  function dlRestore() {
+    var saved = null;
+    try { saved = localStorage.getItem('dlQueue'); } catch (e) {}
+    if (!saved) return;
+    var arr = null;
+    try { arr = JSON.parse(saved); } catch (e) {}
+    if (!arr || !arr.length) return;
+    for (var i = 0; i < arr.length; i++) {
+      var it = arr[i];
+      if (!it || !it.url) continue;
+      var id = ++_dlTaskSeq;
+      // 说明：localStorage 只持久化队列元数据（哪些文件还没下完），不持久化二进制分块。
+      // 页面重载后原文件的内存分块已丢失，无法跨会话断点续传，故从 0 重下。
+      // 同一会话内 暂停→恢复 才走 Range 断点续传（分块仍在内存）。
+      var task = {
+        id: id,
+        name: it.name || it.url.split('/').pop() || 'file',
+        url: _normalizeUrl(it.url),
+        status: 'queued',
+        received: 0,
+        total: it.total || 0,
+        speed: 0,
+        blobUrl: null,
+        error: '',
+        _chunks: []
+      };
+      _dlQueue.push(task);
+      _dlTasks.push(task);
+    }
+    dlUpdateBadge();
+    dlRender();
+    dlPump();
+  }
+
+  // 对话框外点击关闭
+  var dlOverlay = document.getElementById('downloadDialogOverlay');
+  if (dlOverlay) {
+    dlOverlay.addEventListener('click', function(e) {
+      if (e.target === dlOverlay) toggleDownloadDialog(false);
+    });
+  }
+
+  // 页面加载时恢复未完成队列
+  dlRestore();
+})();
+
+// =================================================================
+// Download FAB — 独立拖拽/持久化（机制复刻 shareFab / uploadFab）
+// =================================================================
+(function() {
+  var fab = document.getElementById('downloadFab');
+  if (!fab) return;
+
+  var DEFAULT_RIGHT = 30;
+  var DEFAULT_BOTTOM = 80 + 44 + 6 + 50 + 50; // uploadFab bottom(180) + 50 = 230，位于上传 FAB 上方
+  var MOVED_THRESHOLD = 5;
+  var moved = false;
+  var dragging = false;
+
+  function getSize() {
+    return { w: fab.offsetWidth || 44, h: fab.offsetHeight || 44 };
+  }
+  function getDefaultPos() {
+    var s = getSize();
+    var isMobile = window.innerWidth <= 480;
+    if (isMobile) {
+      // 手机：视口右下角，垂直方向上移避免与 uploadFab 重叠
+      return {
+        left: Math.max(8, window.innerWidth - DEFAULT_RIGHT - s.w),
+        top: Math.max(8, window.innerHeight - DEFAULT_BOTTOM - s.h)
+      };
+    } else {
+      // 电脑：与上传 FAB 一致，放在 app-container 右边缘外侧（靠左显示），垂直方向再上移 50px
+      var appEl = document.getElementById('app');
+      var appRect = appEl ? appEl.getBoundingClientRect() : null;
+      if (appRect) {
+        var left = appRect.right + 12;
+        if (left + s.w > window.innerWidth - 8) {
+          left = appRect.left - s.w - 12;
+        }
+        if (left < 8) {
+          left = window.innerWidth - DEFAULT_RIGHT - s.w;
+        }
+        var top = window.innerHeight - DEFAULT_BOTTOM - s.h;
+        return { left: Math.max(8, left), top: Math.max(8, top) };
+      }
+      return {
+        left: Math.max(8, window.innerWidth - DEFAULT_RIGHT - s.w),
+        top: Math.max(8, window.innerHeight - DEFAULT_BOTTOM - s.h)
+      };
+    }
+  }
+
+  // 重新定位下载 FAB（登录成功后调用，此时 FAB 已可见，尺寸可正确测量）
+  window.relocateDownloadFab = function() {
+    if (!fab) return;
+    var s = getSize();
+    var left = 0, top = 0;
+    var restored = false;
+    try {
+      var saved = localStorage.getItem('downloadFabPos');
+      if (saved) {
+        var p = JSON.parse(saved);
+        if (p && typeof p.x === 'number' && typeof p.y === 'number') {
+          var inX = p.x >= 0 && p.x <= Math.max(0, window.innerWidth - s.w);
+          var inY = p.y >= 0 && p.y <= Math.max(0, window.innerHeight - s.h);
+          if (inX && inY) { left = p.x; top = p.y; restored = true; }
+        }
+      }
+    } catch(e) {}
+    if (!restored) {
+      var def = getDefaultPos();
+      left = def.left; top = def.top;
+      try { localStorage.removeItem('downloadFabPos'); } catch (e) {}
+    }
+    fab.style.left = left + 'px';
+    fab.style.top = top + 'px';
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
+  };
+
+  // 恢复持久化位置（带视口校验；若元素当前隐藏则仅记录，登录成功后由 relocateDownloadFab 重新定位）
+  var pos = null;
+  var fabVisible = fab.offsetParent !== null;
+  try {
+    var saved = localStorage.getItem('downloadFabPos');
+    if (saved) {
+      var p = JSON.parse(saved);
+      if (p && typeof p.x === 'number' && typeof p.y === 'number') {
+        var s = getSize();
+        var inX = p.x >= 0 && p.x <= Math.max(0, window.innerWidth - s.w);
+        var inY = p.y >= 0 && p.y <= Math.max(0, window.innerHeight - s.h);
+        if (inX && inY) pos = { x: p.x, y: p.y };
+      }
+    }
+  } catch(e) {}
+  if (!pos) pos = getDefaultPos();
+  fab.style.left = pos.x + 'px';
+  fab.style.top = pos.y + 'px';
+  fab.style.right = 'auto';
+  fab.style.bottom = 'auto';
+  // 元素当前不可见（未登录被隐藏），尺寸不可靠，标记待登录时重新定位；
+  // 同时清理可能用 0 尺寸算出的脏坐标，避免登录后定位到视口角落
+  if (!fabVisible) {
+    fab._needsRelocate = true;
+    try { localStorage.removeItem('downloadFabPos'); } catch (e) {}
+    var defInit = getDefaultPos();
+    fab.style.left = defInit.left + 'px';
+    fab.style.top = defInit.top + 'px';
+  }
+
+  var startX = 0, startY = 0, fabStartX = 0, fabStartY = 0;
+
+  function onDown(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    var rect = fab.getBoundingClientRect();
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    startY = (e.touches ? e.touches[0].clientY : e.clientY);
+    fabStartX = rect.left;
+    fabStartY = rect.top;
+    moved = false;
+    dragging = true;
+    fab.classList.add('dragging');
+    if (fab.setPointerCapture) {
+      try { fab.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    if (e.preventDefault) e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    var cx = (e.touches ? e.touches[0].clientX : e.clientX);
+    var cy = (e.touches ? e.touches[0].clientY : e.clientY);
+    var dx = cx - startX, dy = cy - startY;
+    if (Math.abs(dx) > MOVED_THRESHOLD || Math.abs(dy) > MOVED_THRESHOLD) moved = true;
+    var w = fab.offsetWidth, h = fab.offsetHeight;
+    var newLeft = Math.min(Math.max(0, fabStartX + dx), window.innerWidth - w);
+    var newTop = Math.min(Math.max(0, fabStartY + dy), window.innerHeight - h);
+    fab.style.left = newLeft + 'px';
+    fab.style.top = newTop + 'px';
+    fab.style.right = 'auto';
+    fab.style.bottom = 'auto';
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function onUp() {
+    if (!dragging) return;
+    dragging = false;
+    fab.classList.remove('dragging');
+    var rect = fab.getBoundingClientRect();
+    var w = fab.offsetWidth || 44, h = fab.offsetHeight || 44;
+    if (!moved) {
+      setTimeout(function() { moved = false; }, 0);
+      return;
+    }
+    if (rect.left < -w * 0.5 || rect.top < -h * 0.5) {
+      var def = getDefaultPos();
+      fab.style.left = def.left + 'px';
+      fab.style.top = def.top + 'px';
+      fab.style.right = 'auto';
+      fab.style.bottom = 'auto';
+      try { localStorage.removeItem('downloadFabPos'); } catch (e) {}
+    } else {
+      try { localStorage.setItem('downloadFabPos', JSON.stringify({ x: rect.left, y: rect.top })); } catch (e) {}
+    }
+    setTimeout(function() { moved = false; }, 0);
+  }
+
+  if (window.PointerEvent) {
+    fab.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  } else {
+    fab.addEventListener('mousedown', onDown);
+    fab.addEventListener('touchstart', onDown, { passive: false });
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchend', onUp);
+    window.addEventListener('touchcancel', onUp);
+  }
+  fab.addEventListener('click', function(e) {
+    if (moved) { e.stopPropagation(); e.preventDefault(); }
+  }, true);
+
+  var resizeTimer = null;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      var def = getDefaultPos();
+      fab.style.left = def.left + 'px';
+      fab.style.top = def.top + 'px';
+      fab.style.right = 'auto';
+      fab.style.bottom = 'auto';
+      try { localStorage.removeItem('downloadFabPos'); } catch (e) {}
     }, 200);
   });
 })();

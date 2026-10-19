@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "ਮੂਲ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਅਪਲੋਡ ਕਰੋ",
   "upload.fab.label": "ਅਪਲੋਡ",
   "upload.dialog.title": "ਅਪਲੋਡ",
-  "btn.close": "ਬੰਦ ਕਰੋ"
+  "btn.close": "ਬੰਦ ਕਰੋ",
+  "dl.fab.label": "ਡਾਊਨਲੋਡ",
+  "dl.dialog.title": "ਡਾਊਨਲੋਡ",
+  "dl.clearAll": "ਸਾਫ਼ ਕਰੋ",
+  "dl.empty": "ਕੋਈ ਡਾਊਨਲੋਡ ਨਹੀਂ",
+  "dl.queued": "ਕਤਾਰ ਵਿੱਚ",
+  "dl.done": "ਪੂਰਾ",
+  "dl.failed": "ਅਸਫਲ",
+  "dl.cancelled": "ਰੱਦ ਕੀਤਾ",
+  "dl.cancel": "ਰੱਦ ਕਰੋ",
+  "dl.retry": "ਮੁੱਠੇ ਦੀ ਕੋਸ਼ਿਸ਼",
+  "dl.remove": "ਹਟਾਓ",
+  "dl.doneCount": "{n} ਪੂਰੇ",
+  "dl.failedCount": "{n} ਅਸਫਲ"
 }

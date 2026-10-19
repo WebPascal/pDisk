@@ -307,6 +307,38 @@ input, button, select, textarea { font-family: inherit; font-size: inherit; outl
 #uploadFab svg { width: 22px; height: 22px; pointer-events: none; }
 #uploadFab .upload-fab-badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; border-radius: 9px; box-shadow: 0 0 0 2px #fff; box-sizing: border-box; pointer-events: none; }
 
+/* 下载悬浮按钮（位于分享 FAB 下方） */
+#downloadFab { position: fixed; right: 30px; bottom: 230px; width: 44px; height: 44px; border-radius: 50%; background: #f59e0b; color: #fff; border: none; cursor: move; display: none; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10000; transition: background 0.3s; user-select: none; -webkit-user-select: none; touch-action: none; }
+#downloadFab:hover { background: #d97706; }
+#downloadFab.dragging { transition: none; cursor: grabbing; }
+#downloadFab svg { width: 22px; height: 22px; pointer-events: none; }
+#downloadFab .upload-fab-badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center; border-radius: 9px; box-shadow: 0 0 0 2px #fff; box-sizing: border-box; pointer-events: none; }
+
+/* ===== 下载任务对话框 ===== */
+.dl-queue { display: flex; flex-direction: column; gap: 10px; min-height: 40px; }
+.dl-empty { text-align: center; color: #9ca3af; font-size: 13px; padding: 24px 0; }
+.dl-item { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 12px; background: #fafafa; }
+.dl-item-top { display: flex; align-items: center; gap: 8px; }
+.dl-item-name { flex: 1; font-size: 13px; font-weight: 500; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl-item-icon { flex-shrink: 0; color: #6b7280; }
+.dl-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.dl-item-actions .dl-btn { border: none; background: #f3f4f6; color: #6b7280; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
+.dl-item-actions .dl-btn:hover { background: #e5e7eb; color: #374151; }
+.dl-item-actions .dl-btn.dl-btn-cancel:hover { background: #fee2e2; color: #dc2626; }
+.dl-progress-track { height: 6px; background: #e5e7eb; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+.dl-progress-fill { height: 100%; background: #f59e0b; border-radius: 3px; transition: width 0.2s; width: 0%; }
+.dl-item-meta { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: #6b7280; }
+.dl-status { font-weight: 600; }
+.dl-status.done { color: #10b981; }
+.dl-status.failed { color: #dc2626; }
+.dl-status.cancelled { color: #9ca3af; }
+.dl-status.downloading { color: #f59e0b; }
+.dl-status.queued { color: #9ca3af; }
+.dl-status.paused { color: #6b7280; }
+/* 暂停/恢复 & 重试按钮：与相邻按钮之间留一点间距，避免误触 */
+.dl-item-actions .dl-btn-pause, .dl-item-actions .dl-btn-retry { margin: 0 6px 0 8px; }
+.dl-summary { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; text-align: center; }
+
 /* 上传对话框（body 层常驻 DOM，仅切换 display，显示/隐藏不中断上传） */
 .upload-dialog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 10001; display: none; align-items: center; justify-content: center; }
 .upload-dialog { background: #fff; width: 92%; max-width: 520px; max-height: 80vh; overflow-y: auto; border-radius: 16px; box-shadow: 0 8px 28px rgba(0,0,0,0.35); }

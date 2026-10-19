@@ -300,5 +300,18 @@
   "upload.dialog.rootHint": "Үндсэн каталог руу хувилах",
   "upload.fab.label": "Хувилах",
   "upload.dialog.title": "Хувилах",
-  "btn.close": "Хаах"
+  "btn.close": "Хаах",
+  "dl.fab.label": "Татах",
+  "dl.dialog.title": "Татах",
+  "dl.clearAll": "Цэвэрлэх",
+  "dl.empty": "Татаж авсан байхгүй",
+  "dl.queued": "Мөрөөгчиддээ",
+  "dl.done": "Дүгнэв",
+  "dl.failed": "Алдаатай",
+  "dl.cancelled": "Цуцлаа",
+  "dl.cancel": "Цуцлах",
+  "dl.retry": "Дахин оролдох",
+  "dl.remove": "Хаслах",
+  "dl.doneCount": "{n} дүгнэв",
+  "dl.failedCount": "{n} алдаатай"
 }
