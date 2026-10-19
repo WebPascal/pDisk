@@ -447,19 +447,16 @@ function updateNavVisibility() {
     }
   }
   if (downloadFab) {
-    downloadFab.style.display = hasToken ? 'flex' : 'none';
-    // 登录成功（FAB 由隐藏转为可见）后重新定位，避免使用隐藏时的 0 尺寸算出的错误坐标
-    if (hasToken && window.relocateDownloadFab) {
+    // 有任务时即使未登录（分享页）也显示下载 FAB
+    var showDlFab = hasToken || (window.dlHasTasks && dlHasTasks());
+    downloadFab.style.display = showDlFab ? 'flex' : 'none';
+    if (showDlFab && window.relocateDownloadFab) {
       if (window.requestAnimationFrame) {
         window.requestAnimationFrame(function() { window.relocateDownloadFab(); });
       } else {
         window.relocateDownloadFab();
       }
     }
-    // 未登录时隐藏下载对话框并清空任务
-    var dlOverlay = document.getElementById('downloadDialogOverlay');
-    if (dlOverlay) dlOverlay.style.display = 'none';
-    if (!hasToken && window.dlClearAll) window.dlClearAll();
   }
   // 返回顶部按钮：登录成功后重新定位（#app 容器此时为主页面，宽度与悬浮按钮一致）
   var btt = document.getElementById('backToTop');
@@ -2457,6 +2454,12 @@ function openShareViewPage(shortId) {
   if (adminBatchRowEl) adminBatchRowEl.style.display = 'none';
   var svp = document.getElementById('shareViewPage');
   if (svp) svp.style.display = 'block';
+  // 分享页保持下载按钮可见（backToTop 对齐参考）
+  var dlFab = document.getElementById('downloadFab');
+  if (dlFab) dlFab.style.display = 'flex';
+  if (dlFab && window.relocateDownloadFab) {
+    window.requestAnimationFrame(function() { window.relocateDownloadFab(); });
+  }
   // 分享页未解锁时隐藏流量指示器
   var st = document.getElementById('shareTrafficIndicator');
   if (st) st.style.display = 'none';
@@ -3673,7 +3676,7 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
     // 桌面端：与 upload/download FAB 一致，贴 app 容器右边缘外侧
     var appEl = document.getElementById('app');
     var appRect = appEl ? appEl.getBoundingClientRect() : null;
-    if (appRect) {
+    if (appRect && appRect.width > 0) {
       var left = appRect.right + 12;
       if (left + s.w > window.innerWidth - 8) left = appRect.left - s.w - 12;
       if (left < 8) left = window.innerWidth - DEFAULT_RIGHT - s.w;
@@ -3687,13 +3690,16 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
   }
   function applyDefaultPos() {
     var p = getDefaultPos();
-    // 水平方向直接对齐到 FAB 那一列（share/upload/download 都是 position:fixed，
-    // 用 getBoundingClientRect().left 读视口坐标最可靠），避免各自独立读 #app 时
-    // 因执行时机不同（页面加载早期 vs 登录后）算出略偏左的坐标
-    var ref = document.getElementById('shareFab');
-    if (ref && ref.style.display !== 'none') {
-      var r = ref.getBoundingClientRect();
-      if (r.left > 0) p.left = Math.round(r.left);
+    // 水平方向对齐到当前可见的 FAB 列（download/upload/share 都是 position:fixed，
+    // 用 getBoundingClientRect().left 读视口坐标最可靠）。分享页会隐藏 share/upload、
+    // 只显示 download，所以取"第一个可见且有效"的 FAB 作参考，避免回退到视口兜底。
+    var refs = ['downloadFab', 'uploadFab', 'shareFab'];
+    for (var ri = 0; ri < refs.length; ri++) {
+      var ref = document.getElementById(refs[ri]);
+      if (ref && ref.style.display !== 'none') {
+        var r = ref.getBoundingClientRect();
+        if (r.left > 0) { p.left = Math.round(r.left); break; }
+      }
     }
     btn.style.left = p.left + 'px';
     btn.style.top = p.top + 'px';
@@ -3749,7 +3755,7 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
       // 电脑：按钮在 app-container 右侧，底部对齐返回顶部按钮上方
       var appEl = document.getElementById('app');
       var appRect = appEl ? appEl.getBoundingClientRect() : null;
-      if (appRect) {
+      if (appRect && appRect.width > 0) {
         // 放在 app-container 右边缘外侧
         var left = appRect.right + 12;
         // 如果超出视口，则放在 app-container 左边缘外侧
@@ -3960,7 +3966,7 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
       // 电脑：与分享 FAB 一致，放在 app-container 右边缘外侧（靠左显示）
       var appEl = document.getElementById('app');
       var appRect = appEl ? appEl.getBoundingClientRect() : null;
-      if (appRect) {
+      if (appRect && appRect.width > 0) {
         var left = appRect.right + 12;
         if (left + s.w > window.innerWidth - 8) {
           left = appRect.left - s.w - 12;
@@ -4482,11 +4488,20 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
     dlPersist();
   };
 
-  // 更新 FAB 徽章
+  // 是否还有任务（供分享页未登录时也显示下载 FAB）
+  window.dlHasTasks = function() {
+    return _dlTasks.length > 0;
+  };
+
+  // 更新 FAB 徽章（并同步 FAB 显隐：登录态或存在任务时显示，分享页未登录也能看到）
   function dlUpdateBadge() {
     var badge = document.getElementById('downloadFabBadge');
     var fab = document.getElementById('downloadFab');
     if (!badge || !fab) return;
+    // 有 token（登录）或 有任务 或 处于分享视图 → 显示下载 FAB；否则隐藏
+    var _svp = document.getElementById('shareViewPage');
+    var _inShare = _svp && _svp.style.display !== 'none';
+    fab.style.display = (getToken() || _dlTasks.length > 0 || _inShare) ? 'flex' : 'none';
     var s = dlStatusOf();
     var activeCount = s.active;
     if (activeCount > 0) {
@@ -4710,7 +4725,13 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
       // 电脑：与上传 FAB 一致，放在 app-container 右边缘外侧（靠左显示），垂直方向再上移 50px
       var appEl = document.getElementById('app');
       var appRect = appEl ? appEl.getBoundingClientRect() : null;
-      if (appRect) {
+      // #app 隐藏（分享页）时，改用分享页内容框 .share-view-box 作参考，避免回退到视口最右边
+      if (!appRect || appRect.width === 0) {
+        var svb = document.querySelector('.share-view-box');
+        var svRect = svb ? svb.getBoundingClientRect() : null;
+        if (svRect && svRect.width > 0) appRect = svRect;
+      }
+      if (appRect && appRect.width > 0) {
         var left = appRect.right + 12;
         if (left + s.w > window.innerWidth - 8) {
           left = appRect.left - s.w - 12;
