@@ -201,6 +201,8 @@
   "share.unlock": "ལྕོགས་གསར།",
   "share.downloadFile": "ཡིག་ཆ་ཕབ་པ།",
   "share.notExist": "མཉམ་སྤྱོད་མེད།",
+  "share.qr": "QR",
+  "share.qrFailed": "QRཡི་མན་ཆད་ཕུལ་སྙོམས་སྐྲུན་རྒྱུ་མེད",
   "share.paramIncomplete": "ཚད་གཞི་མ་ཚང་བ།",
   "share.sharedBy": "མཉམ་སྤྱོད་པ།",
   "share.pwdWrong": "གསང་ཚིག་ནོར་བུ།",
@@ -313,5 +315,15 @@
   "dl.retry": "བསྐྱར་ཞུ་བ་",
   "dl.remove": "བཏུབ་པ།",
   "dl.doneCount": "{n} ལེགས་འགྱུར།",
-  "dl.failedCount": "{n} ཕམ་པ།"
+  "dl.failedCount": "{n} ཕམ་པ།",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

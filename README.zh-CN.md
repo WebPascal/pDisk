@@ -9,6 +9,7 @@
 - **用户注册与登录** — JWT Token 身份验证
 - **文件上传** — 拖拽上传、多文件队列、进度显示、保留原始文件名
 - **文件下载** — 按原始文件名下载，支持下载进度列表、多文件并发下载与完成后自动保存
+- **文件改名** — 文件列表支持改名（仅修改显示的文件名，扩展名不可改，服务器实际文件名不变），旧分享中的文件名不受影响
 - **文件分享** — 密码保护分享链接，分享页支持预览/下载/播放
 - **目录管理** — 创建、浏览、删除；树形视图支持跨目录复制
 - **文件预览** — 图片、音频、视频、PDF、DOCX、XLSX、PPTX、常见文本文件
@@ -77,9 +78,9 @@ pDisk/
 │   ├── register.api       # 用户注册
 │   ├── change_pwd.api     # 修改密码
 │   ├── upload.api         # 文件上传
-│   ├── upload2.api        # 上传（备用接口）
 │   ├── file_list.api      # 获取用户文件列表
 │   ├── file_copy.api      # 复制文件到其他目录
+│   ├── file_rename.api    # 重命名文件（修改显示名称）
 │   ├── file_delete.api    # 删除文件
 │   ├── dir_create.api     # 创建目录
 │   ├── dir_delete.api     # 删除目录
@@ -93,6 +94,7 @@ pDisk/
 │   ├── share_view.api     # 查看分享页
 │   ├── share_my_list.api  # 列出我的分享
 │   ├── share_admin_list.api# 后台：列出所有分享
+│   ├── qrcode.api         # 根据 URL 生成二维码
 │   ├── admin_user_list.api # 后台：用户列表
 │   ├── admin_user_toggle.api# 后台：启用/禁用用户
 │   ├── admin_user_delete.api# 后台：删除用户
@@ -126,9 +128,9 @@ pDisk/
 | `/ask/register.api` | POST | 注册（用户名、邮箱、密码） |
 | `/ask/change_pwd.api` | POST | 修改密码（Token + 旧/新密码） |
 | `/ask/upload.api` | POST | 上传文件（FormData） |
-| `/ask/upload2.api` | POST | 上传（备用接口） |
 | `/ask/file_list.api` | GET | 获取目录文件列表 |
 | `/ask/file_copy.api` | POST | 复制文件（fid、目标目录） |
+| `/ask/file_rename.api` | POST | 重命名文件（path、newName，仅改显示名） |
 | `/ask/file_delete.api` | POST | 删除文件（fid） |
 | `/ask/dir_create.api` | POST | 创建目录（名称、父路径） |
 | `/ask/dir_delete.api` | POST | 删除目录（路径） |
@@ -142,6 +144,7 @@ pDisk/
 | `/ask/share_view.api` | GET | 查看分享页 |
 | `/ask/share_my_list.api` | GET | 列出我的分享 |
 | `/ask/share_admin_list.api` | GET | 后台：列出所有分享 |
+| `/ask/qrcode.api` | POST | 根据 `url` 参数生成二维码，返回 base64 PNG（JWT 保护） |
 | `/ask/admin_user_list.api` | GET | 后台：用户列表 |
 | `/ask/admin_user_toggle.api` | POST | 后台：启用/禁用用户 |
 | `/ask/admin_user_delete.api` | POST | 后台：删除用户 |
@@ -158,6 +161,13 @@ pDisk/
 ## 升级日志
 
 > `+` 新增 · `>` 修正 · `-` 去除 · `^` 调整
+
+### 1.13
+- `+` 文件列表新增「改名」按钮，点击即可修改文件的显示名称；
+- `+` 改名时扩展名不能修改，不修改已创建分享链接中的文件名；
+- `+` 分享项（我的分享、管理 › 分享管理）新增橙色「二维码」按钮，点击查看分享链接的可扫描二维码对话框；
+- `+` 「分享已创建」结果对话框在复制链接按钮上方显示二维码；
+- `+` 新增后端 API `/ask/qrcode.api` — 接收 `url` 参数（JWT 保护），返回 base64 PNG 二维码。
 
 ### 1.12
 - `+` 右下角新增下载悬浮按钮（位于上传按钮上方），点击进入下载任务列表；

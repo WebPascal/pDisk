@@ -201,6 +201,8 @@
   "share.unlock": "અનલોક કરો",
   "share.downloadFile": "ફાઇલ ડાઉનલોડ કરો",
   "share.notExist": "શેર અસ્તિત્વમાં નથી",
+  "share.qr": "QR કોડ",
+  "share.qrFailed": "QR કોડ બનવો નિષ્ફળ",
   "share.paramIncomplete": "અપૂર્ણ પરિમાણો",
   "share.sharedBy": "દ્વારા શેર કર્યું",
   "share.pwdWrong": "ખોટો પાસવર્ડ",
@@ -313,5 +315,15 @@
   "dl.retry": "ફરી પ્રયત્ન કરો",
   "dl.remove": "દૂર કરો",
   "dl.doneCount": "{n} પૂર્ણ",
-  "dl.failedCount": "{n} નિષ્ફળ"
+  "dl.failedCount": "{n} નિષ્ફળ",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

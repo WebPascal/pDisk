@@ -201,6 +201,8 @@
   "share.unlock": "Kilidi Aç",
   "share.downloadFile": "Dosyayı İndir",
   "share.notExist": "Paylaşım mevcut değil",
+  "share.qr": "QR Kod",
+  "share.qrFailed": "QR kodu oluşturulamadı",
   "share.paramIncomplete": "Eksik parametreler",
   "share.sharedBy": "Paylaşan",
   "share.pwdWrong": "Yanlış parola",
@@ -313,5 +315,15 @@
   "dl.retry": "Tekrar dene",
   "dl.remove": "Kaldır",
   "dl.doneCount": "{n} tamamlandı",
-  "dl.failedCount": "{n} başarısız"
+  "dl.failedCount": "{n} başarısız",
+  "files.rename": "Ad",
+  "files.renameTitle": "Dosyayı Yeniden Adlandır",
+  "files.renameLabel": "Yeni dosya adı",
+  "files.renameExt": "{ext} uzantısı değiştirilemez",
+  "toast.renameEmpty": "Lütfen yeni bir dosya adı girin",
+  "toast.renameSuccess": "Yeniden adlandırıldı",
+  "toast.renameFailed": "Yeniden adlandırma başarısız",
+  "file.renameMissingParams": "Lütfen yeni bir dosya adı girin",
+  "file.renameDuplicate": "Bu dizinde aynı adlı dosya zaten var",
+  "file.renameSuccess": "Yeniden adlandırıldı"
 }

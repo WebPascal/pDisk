@@ -201,6 +201,8 @@
   "share.unlock": "Feloldás",
   "share.downloadFile": "Fájl letöltése",
   "share.notExist": "A megosztás nem létezik",
+  "share.qr": "QR-kód",
+  "share.qrFailed": "A QR-kód generálása sikertelen",
   "share.paramIncomplete": "Hiányos paraméterek",
   "share.sharedBy": "Megosztotta",
   "share.pwdWrong": "Helytelen jelszó",
@@ -313,5 +315,15 @@
   "dl.retry": "Újra",
   "dl.remove": "Eltávolítás",
   "dl.doneCount": "{n} kész",
-  "dl.failedCount": "{n} sikertelen"
+  "dl.failedCount": "{n} sikertelen",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

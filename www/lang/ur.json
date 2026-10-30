@@ -201,6 +201,8 @@
   "share.unlock": "ان لاک",
   "share.downloadFile": "فائل ڈاؤن لوڈ",
   "share.notExist": "شیئر موجود نہیں",
+  "share.qr": "QR کوڈ",
+  "share.qrFailed": "QR کوڈ بنانے میں ناکامی",
   "share.paramIncomplete": "نامکمل پیرامیٹرز",
   "share.sharedBy": "شیئر کنندہ",
   "share.pwdWrong": "غلط پاس ورڈ",
@@ -313,5 +315,15 @@
   "dl.retry": "دوبارہ کوشش",
   "dl.remove": "ہٹائیں",
   "dl.doneCount": "{n} مکمل",
-  "dl.failedCount": "{n} ناکام"
+  "dl.failedCount": "{n} ناکام",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

@@ -1110,6 +1110,7 @@ function renderFileList(data) {
       '</div>' +
       '<div class="file-actions" id="fa-' + i + '">' +
         '<button class="btn btn-sm btn-outline" onclick="showCopyDialog(\'' + escAttr(filePath) + '\',\'' + escAttr(f.name) + '\')" data-i18n="files.copy">' + t('files.copy') + '</button>' +
+        '<button class="btn btn-sm file-btn-green" data-path="' + escAttr(filePath) + '" data-name="' + escAttr(f.name) + '" onclick="showRenameDialog(this)" data-i18n="files.rename">' + t('files.rename') + '</button>' +
         '<button class="btn btn-danger btn-sm" onclick="deleteFile(\'' + escAttr(filePath) + '\', event, \'' + escAttr(f.name) + '\')" data-i18n="files.delete">' + t('files.delete') + '</button>' +
         '<button class="btn btn-sm file-btn-blue" onclick="copyLink(\'' + escAttr(encodedUrl) + '\')" data-i18n="files.link">' + t('files.link') + '</button>' +
         '<a class="btn btn-sm file-btn-orange" href="javascript:void(0);" onclick="event.stopPropagation();downloadFile(\'' + escAttr(filePath) + '\',\'' + escAttr(f.name) + '\')" data-i18n="files.download">' + t('files.download') + '</a>' +
@@ -2333,6 +2334,7 @@ function confirmShare() {
       '<div class="form-group"><label>' + t('share.title') + '</label><div>' + escHtml(title) + '</div></div>' +
       '<div class="form-group"><label>' + t('share.pwd') + '</label><div style="letter-spacing:4px;font-family:monospace;font-size:18px;color:#22c55e;">' + escHtml(pwd) + '</div></div>' +
       '<div class="form-group"><label>' + t('share.url') + '</label><div style="word-break:break-all;user-select:all;font-family:monospace;font-size:14px;color:#3b82f6;">' + escHtml(url) + '</div></div>' +
+      '<div id="shareCreatedQr" style="text-align:center;margin:8px 0;"><div class="loading">' + t('files.loading') + '</div></div>' +
       '<div class="flex gap-8 mt-12">' +
         '<button class="btn btn-primary btn-block" id="shareCopyUrlBtn">' + t('share.copyUrl') + '</button>' +
       '</div>';
@@ -2340,6 +2342,18 @@ function confirmShare() {
     // 创建成功后清空缓存
     clearShareQueue();
     showDialog(resultHtml);
+    // 加载分享二维码
+    (function() {
+      var qrEl = document.getElementById('shareCreatedQr');
+      if (!qrEl) return;
+      postRequest('qrcode.api', { token: getToken(), url: urlWithPwd }, function(err, res) {
+        if (err || res.code !== 200 || !res.data) {
+          qrEl.innerHTML = '';
+          return;
+        }
+        qrEl.innerHTML = '<img src="' + qrImgSrc(res.data) + '" width="68" height="68" style="border-radius:8px;margin:0 auto;display:block;box-shadow:-3px 3px 8px rgba(64,64,64,0.6);">';
+      });
+    })();
     var copyBtn = document.getElementById('shareCopyUrlBtn');
     if (copyBtn) {
       copyBtn.addEventListener('click', function() {
@@ -2391,10 +2405,40 @@ function loadMyShares() {
           '<button class="share-action-btn share-btn-pwd" data-copy="' + escAttr(s.FPassword) + '" data-toast="toast.copyPwdSuccess">' + t('share.copyPwd') + '</button>' +
           '<button class="share-action-btn share-btn-link" data-copy="' + escAttr(urlWithPwd) + '" data-toast="toast.copySuccess">' + t('share.copyUrl') + '</button>' +
           '<button class="share-action-btn share-btn-del" onclick="deleteShare(\'' + s.FShareID + '\', \'' + escAttr(s.FTitle) + '\', false)">' + t('dialog.delete') + '</button>' +
+          '<button class="share-action-btn share-btn-qr" onclick="showQrDialog(\'' + escAttr(urlWithPwd) + '\', \'' + escAttr(s.FTitle) + '\')">' + t('share.qr') + '</button>' +
         '</div>' +
       '</div>';
     }
     c.innerHTML = html;
+  });
+}
+
+// 二维码 src 兼容处理：QRCode 返回 base64 明文或 data URI 均可直接用于 <img src>
+function qrImgSrc(data) {
+  if (!data) return '';
+  if (data.indexOf('data:') === 0) return data;
+  if (data.indexOf('http') === 0) return data;
+  return 'data:image/png;base64,' + data;
+}
+
+function showQrDialog(url, title) {
+  if (!getToken()) { showToast(t('toast.pleaseLogin')); return; }
+  var dlgHtml =
+    '<div class="qr-dialog">' +
+      '<div class="qr-dialog-title">' + escHtml(title || '') + '</div>' +
+      '<div id="qrDialogImg"><div class="loading">' + t('files.loading') + '</div></div>' +
+      '<a class="qr-dialog-url" href="' + escAttr(url) + '" target="_blank" rel="noopener">' + escHtml(url) + '</a>' +
+      '<div class="dialog-actions" style="width:100%;"><button class="btn btn-outline btn-sm" onclick="closeDialog()">' + t('btn.close') + '</button></div>' +
+    '</div>';
+  showDialog(dlgHtml);
+  postRequest('qrcode.api', { token: getToken(), url: url }, function(err, res) {
+    var imgEl = document.getElementById('qrDialogImg');
+    if (!imgEl) return;
+    if (err || res.code !== 200 || !res.data) {
+      imgEl.innerHTML = '<div style="color:#ef4444;font-size:13px;">' + t('share.qrFailed') + '</div>';
+      return;
+    }
+    imgEl.innerHTML = '<img src="' + qrImgSrc(res.data) + '" width="68" height="68" style="border-radius:8px;">';
   });
 }
 
@@ -2433,6 +2477,7 @@ function loadAdminShares() {
         '<div class="share-item-actions">' +
           '<button class="share-action-btn share-btn-link" data-copy="' + escAttr(urlWithPwd) + '" data-toast="toast.copySuccess">' + t('share.copyUrl') + '</button>' +
           '<button class="share-action-btn share-btn-del" onclick="deleteShare(\'' + s.FShareID + '\', \'' + escAttr(s.FTitle) + '\', true)">' + t('dialog.delete') + '</button>' +
+          '<button class="share-action-btn share-btn-qr" onclick="showQrDialog(\'' + escAttr(urlWithPwd) + '\', \'' + escAttr(s.FTitle) + '\')">' + t('share.qr') + '</button>' +
         '</div>' +
       '</div>';
     }
@@ -2769,6 +2814,46 @@ function copyLink(url) {
     showToast(t('toast.copyFailed'));
   }
   document.body.removeChild(inp);
+}
+
+// ===== 改名（只改数据库中的原始文件名，扩展名锁定，物理文件不动）=====
+function showRenameDialog(btn) {
+  var path = btn.getAttribute('data-path');
+  var originalName = btn.getAttribute('data-name') || '';
+  var dotIdx = originalName.lastIndexOf('.');
+  var base = dotIdx > 0 ? originalName.slice(0, dotIdx) : originalName;
+  var ext = dotIdx > 0 ? originalName.slice(dotIdx) : '';
+  var html = '<div class="dialog-title"><svg class="icon" style="vertical-align:middle;margin-right:4px;"><use href="#icon-file"/></svg> ' + t('files.renameTitle') + '</div>';
+  html += '<div class="form-group"><label>' + t('files.renameLabel') + '</label>';
+  html += '<input type="text" class="form-input" id="renameNewNameInput" value="' + escAttr(base) + '" maxlength="120" style="width:100%;box-sizing:border-box;">';
+  if (ext) {
+    html += '<div style="margin-top:6px;font-size:12px;color:#999;">' + t('files.renameExt', { ext: escHtml(ext) }) + '</div>';
+  }
+  html += '</div><div class="dialog-actions">';
+  html += '<button class="btn btn-outline" onclick="closeDialog()" data-i18n="btn.cancel">' + t('btn.cancel') + '</button>';
+  html += '<button class="btn btn-primary" onclick="doRenameFile(\'' + escAttr(path) + '\',\'' + escAttr(ext) + '\')" data-i18n="btn.confirm">' + t('btn.confirm') + '</button>';
+  html += '</div>';
+  showDialog(html);
+  var inp = document.getElementById('renameNewNameInput');
+  if (inp) { inp.focus(); inp.select(); }
+}
+
+function doRenameFile(path, ext) {
+  var inp = document.getElementById('renameNewNameInput');
+  var newName = inp ? inp.value.trim() : '';
+  if (newName === '') { showToast(t('toast.renameEmpty')); return; }
+  var fullPath = newName + ext;
+  closeDialog();
+  var token = getToken();
+  postRequest('file_rename.api', { token: token, path: path, newName: fullPath }, function(err, res) {
+    if (err || res.code !== 200) {
+      showToast(t(res && res.msg) || t('toast.renameFailed'));
+      return;
+    }
+    showToast(t('toast.renameSuccess'));
+    loadFileList();
+    loadRecentFiles();
+  });
 }
 
 function showCopyDialog(path, originalName) {

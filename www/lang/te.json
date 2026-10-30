@@ -201,6 +201,8 @@
   "share.unlock": "అన్‌లాక్",
   "share.downloadFile": "ఫైల్ డౌన్‌లోడ్",
   "share.notExist": "షేర్ ఉనికిలో లేదు",
+  "share.qr": "QR కోడ్",
+  "share.qrFailed": "QR కోడ్ సృష్టించడం విఫలమైంది",
   "share.paramIncomplete": "అసంపూర్ణ పారామీటర్లు",
   "share.sharedBy": "షేర్ చేసినవారు",
   "share.pwdWrong": "తప్పు పాస్‌వర్డ్",
@@ -313,5 +315,15 @@
   "dl.retry": "మళ్లీ ప్రయత్నించండి",
   "dl.remove": "తీసేయండి",
   "dl.doneCount": "{n} పూర్తి",
-  "dl.failedCount": "{n} విఫలం"
+  "dl.failedCount": "{n} విఫలం",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

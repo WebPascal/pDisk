@@ -201,6 +201,8 @@
   "share.unlock": "قۇلۇپنى ئېچىش",
   "share.downloadFile": "ھۆججەت چۈشۈرۈش",
   "share.notExist": "ھەمبەھىر مەۋجۇت ئەمەس",
+  "share.qr": "QR كود",
+  "share.qrFailed": "QR كود ياسىلىشى مەغلۇپ",
   "share.paramIncomplete": "پارامېتىر تولۇق ئەمەس",
   "share.sharedBy": "ھەمبەھىرلىگۈچى",
   "share.pwdWrong": "پارول خاتا",
@@ -313,5 +315,15 @@
   "dl.retry": "قايتا سىناش",
   "dl.remove": "ئۆچۈرۈش",
   "dl.doneCount": "{n} تامام",
-  "dl.failedCount": "{n} مەغلۇپ"
+  "dl.failedCount": "{n} مەغلۇپ",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

@@ -201,6 +201,8 @@
   "share.unlock": "Lås op",
   "share.downloadFile": "Download fil",
   "share.notExist": "Deling findes ikke",
+  "share.qr": "QR-kode",
+  "share.qrFailed": "QR-kode generering fejlet",
   "share.paramIncomplete": "Ufuldstændige parametre",
   "share.sharedBy": "Delt af",
   "share.pwdWrong": "Forkert adgangskode",
@@ -313,5 +315,15 @@
   "dl.retry": "Prøv igen",
   "dl.remove": "Fjern",
   "dl.doneCount": "{n} færdig",
-  "dl.failedCount": "{n} fejlet"
+  "dl.failedCount": "{n} fejlet",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

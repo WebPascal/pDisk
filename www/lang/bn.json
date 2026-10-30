@@ -201,6 +201,8 @@
   "share.unlock": "আনলক",
   "share.downloadFile": "ফাইল ডাউনলোড",
   "share.notExist": "শেয়ার বিদ্যমান নেই",
+  "share.qr": "QR কোড",
+  "share.qrFailed": "QR কোড তৈরি ব্যর্থ",
   "share.paramIncomplete": "অসম্পূর্ণ পরামিতি",
   "share.sharedBy": "শেয়ারকারী",
   "share.pwdWrong": "পাসওয়ার্ড ভুল",
@@ -313,5 +315,15 @@
   "dl.retry": "আবার চেষ্টা",
   "dl.remove": "সরান",
   "dl.doneCount": "{n} সম্পন্ন",
-  "dl.failedCount": "{n} ব্যর্থ"
+  "dl.failedCount": "{n} ব্যর্থ",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

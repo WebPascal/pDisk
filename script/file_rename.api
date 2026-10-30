@@ -1,0 +1,73 @@
+include('/conn.cfg');
+include('/verify_token.api');
+
+try
+  var username := ReadGlobalVar('_username');
+
+  var path := URLEncode.Decode(request.Params['path'], false);
+  var newName := URLEncode.Decode(request.Params['newName'], false);
+
+  // 参数校验
+  if (path = '') or (newName = '') then
+  begin
+    writeln('{"code":400,"msg":"file.renameMissingParams"}');
+    exit;
+  end;
+
+  // 确保路径以 /up/ 开头
+  if Pos('/up/', path) <> 1 then
+    path := '/up/' + path;
+
+  // 验证文件属于当前用户
+  var userPrefix := '/up/' + username + '/';
+  if Pos(userPrefix, path) <> 1 then
+  begin
+    writeln('{"code":400,"msg":"file.noPermission"}');
+    exit;
+  end;
+
+  // 检查磁盘文件是否存在
+  if not File.Exists(path) then
+  begin
+    writeln('{"code":400,"msg":"file.notExist"}');
+    exit;
+  end;
+
+  // 同目录下重名检查（按原始文件名）
+  var dir := File.Path(path);
+  if Copy(dir, Length(dir), 1) <> '/' then
+    dir := dir + '/';
+  var dirPattern := dir + '%';
+
+  var dupRes := json.parse(db.query('mydb',
+    'SELECT COUNT(*) as cnt FROM tFileRecords WHERE FUsername=:p1 AND FStoredPath LIKE :p2 AND FOriginalName=:p3 AND FStoredPath<>:p4',
+    username, dirPattern, newName, path));
+  if (dupRes.code = 200) and (dupRes.data.length() > 0) and (StrToInt(dupRes.data[0].cnt) > 0) then
+  begin
+    writeln('{"code":400,"msg":"file.renameDuplicate"}');
+    exit;
+  end;
+
+  // 更新 FOriginalName（物理文件不动）
+  var upRes := json.parse(db.exec('mydb',
+    'UPDATE tFileRecords SET FOriginalName=:p1 WHERE FStoredPath=:p2 AND FUsername=:p3',
+    newName, path, username));
+
+  if (upRes.code = 200) and (upRes.rowcount > 0) then
+  begin
+    writeln('{"code":200,"msg":"file.renameSuccess"}');
+  end
+  else
+  begin
+    // 无已有记录，插入一条新记录
+    db.exec('mydb',
+      'INSERT INTO tFileRecords(FUsername, FOriginalName, FStoredPath, FFileSize, FCreateTime) VALUES(:p1, :p2, :p3, :p4, :p5)',
+      username, newName, path, IntToStr(File.Size(path)), FormatDateTime('yyyy-MM-dd hh:nn:ss', Now));
+    writeln('{"code":200,"msg":"file.renameSuccess"}');
+  end;
+
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"' + E.Message + '"}');
+end;
+end;

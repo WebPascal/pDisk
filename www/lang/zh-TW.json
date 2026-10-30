@@ -201,6 +201,8 @@
   "share.unlock": "解鎖",
   "share.downloadFile": "下載檔案",
   "share.notExist": "分享不存在",
+  "share.qr": "QR 碼",
+  "share.qrFailed": "QR 碼產生失敗",
   "share.paramIncomplete": "參數不完整",
   "share.sharedBy": "分享者",
   "share.pwdWrong": "密碼錯誤",
@@ -313,5 +315,15 @@
   "dl.retry": "重詩",
   "dl.remove": "移除",
   "dl.doneCount": "{n} 個完成",
-  "dl.failedCount": "{n} 個失敗"
+  "dl.failedCount": "{n} 個失敗",
+  "files.rename": "改名",
+  "files.renameTitle": "改名",
+  "files.renameLabel": "新檔案名",
+  "files.renameExt": "擴充名 {ext} 不可修改",
+  "toast.renameEmpty": "請輸入新檔案名",
+  "toast.renameSuccess": "改名成功",
+  "toast.renameFailed": "改名失敗",
+  "file.renameMissingParams": "請輸入新檔案名",
+  "file.renameDuplicate": "該目錄已存在同名檔案",
+  "file.renameSuccess": "改名成功"
 }

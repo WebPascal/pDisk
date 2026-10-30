@@ -201,6 +201,8 @@
   "share.unlock": "അൺലോക്ക്",
   "share.downloadFile": "ഫയൽ ഡൗൺലോഡ്",
   "share.notExist": "പങ്കിടൽ നിലവിലില്ല",
+  "share.qr": "QR കോഡ്",
+  "share.qrFailed": "QR കോഡ് സൃഷ്ടിക്കാൻ പരാജയപ്പെട്ടു",
   "share.paramIncomplete": "അപൂർണ്ണ പാരാമീറ്ററുകൾ",
   "share.sharedBy": "പങ്കിട്ടത്",
   "share.pwdWrong": "തെറ്റായ പാസ്‌വേഡ്",
@@ -313,5 +315,15 @@
   "dl.retry": "വീണ്ടും ശ്രമിക്കുക",
   "dl.remove": "ഓഴിക്കുക",
   "dl.doneCount": "{n} പൂർണം",
-  "dl.failedCount": "{n} പരാജയം"
+  "dl.failedCount": "{n} പരാജയം",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

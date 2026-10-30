@@ -201,6 +201,8 @@
   "share.unlock": "فتح",
   "share.downloadFile": "تحميل الملف",
   "share.notExist": "المشاركة غير موجودة",
+  "share.qr": "رمز QR",
+  "share.qrFailed": "فشل في إنشاء رمز QR",
   "share.paramIncomplete": "معلمات غير مكتملة",
   "share.sharedBy": "شارك بواسطة",
   "share.pwdWrong": "كلمة المرور خاطئة",
@@ -313,5 +315,15 @@
   "dl.retry": "إعادة المحاولة",
   "dl.remove": "إزالة",
   "dl.doneCount": "{n} تم",
-  "dl.failedCount": "{n} فشل"
+  "dl.failedCount": "{n} فشل",
+  "files.rename": "اسم",
+  "files.renameTitle": "إعادة تسمية الملف",
+  "files.renameLabel": "اسم الملف الجديد",
+  "files.renameExt": "لا يمكن تغيير الامتداد {ext}",
+  "toast.renameEmpty": "يرجى إدخال اسم ملف جديد",
+  "toast.renameSuccess": "تمت إعادة التسمية بنجاح",
+  "toast.renameFailed": "فشل في إعادة التسمية",
+  "file.renameMissingParams": "يرجى إدخال اسم ملف جديد",
+  "file.renameDuplicate": "يوجد ملف بنفس الاسم بالفعل في هذا المجلد",
+  "file.renameSuccess": "تمت إعادة التسمية بنجاح"
 }

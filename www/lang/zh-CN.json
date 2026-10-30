@@ -313,5 +313,17 @@
   "dl.retry": "重试",
   "dl.remove": "移除",
   "dl.doneCount": "{n} 个完成",
-  "dl.failedCount": "{n} 个失败"
+  "dl.failedCount": "{n} 个失败",
+  "files.rename": "改名",
+  "files.renameTitle": "改名",
+  "files.renameLabel": "新文件名",
+  "files.renameExt": "扩展名 {ext} 不可修改",
+  "toast.renameEmpty": "请输入新文件名",
+  "toast.renameSuccess": "改名成功",
+  "toast.renameFailed": "改名失败",
+  "share.qr": "二维码",
+  "share.qrFailed": "二维码生成失败",
+  "file.renameMissingParams": "请输入新文件名",
+  "file.renameDuplicate": "该目录已存在同名文件",
+  "file.renameSuccess": "改名成功"
 }

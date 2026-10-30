@@ -201,6 +201,8 @@
   "share.unlock": "Buka kunci",
   "share.downloadFile": "Unduh File",
   "share.notExist": "Pembagian tidak ada",
+  "share.qr": "Kode QR",
+  "share.qrFailed": "Pembuatan kode QR gagal",
   "share.paramIncomplete": "Parameter tidak lengkap",
   "share.sharedBy": "Dibagikan oleh",
   "share.pwdWrong": "Kata sandi salah",
@@ -313,5 +315,15 @@
   "dl.retry": "Ulangi",
   "dl.remove": "Hapus",
   "dl.doneCount": "{n} selesai",
-  "dl.failedCount": "{n} gagal"
+  "dl.failedCount": "{n} gagal",
+  "files.rename": "Nama",
+  "files.renameTitle": "Ubah Nama File",
+  "files.renameLabel": "Nama file baru",
+  "files.renameExt": "Ekstensi {ext} tidak dapat diubah",
+  "toast.renameEmpty": "Masukkan nama file baru",
+  "toast.renameSuccess": "Nama file diubah",
+  "toast.renameFailed": "Gagal mengubah nama",
+  "file.renameMissingParams": "Masukkan nama file baru",
+  "file.renameDuplicate": "Sudah ada file dengan nama sama di direktori ini",
+  "file.renameSuccess": "Nama file diubah"
 }

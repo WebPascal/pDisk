@@ -201,6 +201,8 @@
   "share.unlock": "Разблокировать",
   "share.downloadFile": "Скачать файл",
   "share.notExist": "Общий ресурс не существует",
+  "share.qr": "QR-код",
+  "share.qrFailed": "Ошибка генерации QR-кода",
   "share.paramIncomplete": "Неполные параметры",
   "share.sharedBy": "Опубликовал",
   "share.pwdWrong": "Неверный пароль",
@@ -313,5 +315,15 @@
   "dl.retry": "Повторить",
   "dl.remove": "Удалить",
   "dl.doneCount": "{n} завершено",
-  "dl.failedCount": "{n} не удалось"
+  "dl.failedCount": "{n} не удалось",
+  "files.rename": "Имя",
+  "files.renameTitle": "Переименовать файл",
+  "files.renameLabel": "Новое имя файла",
+  "files.renameExt": "Расширение {ext} нельзя изменить",
+  "toast.renameEmpty": "Введите новое имя файла",
+  "toast.renameSuccess": "Файл переименован",
+  "toast.renameFailed": "Не удалось переименовать",
+  "file.renameMissingParams": "Введите новое имя файла",
+  "file.renameDuplicate": "Файл с таким именем уже существует в этом каталоге",
+  "file.renameSuccess": "Файл переименован"
 }

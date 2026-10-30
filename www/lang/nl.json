@@ -201,6 +201,8 @@
   "share.unlock": "Ontgrendelen",
   "share.downloadFile": "Bestand downloaden",
   "share.notExist": "Share bestaat niet",
+  "share.qr": "QR-code",
+  "share.qrFailed": "QR-code genereren mislukt",
   "share.paramIncomplete": "Onvolledige parameters",
   "share.sharedBy": "Gedeeld door",
   "share.pwdWrong": "Verkeerd wachtwoord",
@@ -313,5 +315,15 @@
   "dl.retry": "Opnieuw proberen",
   "dl.remove": "Verwijderen",
   "dl.doneCount": "{n} voltooid",
-  "dl.failedCount": "{n} mislukt"
+  "dl.failedCount": "{n} mislukt",
+  "files.rename": "Naam",
+  "files.renameTitle": "Bestand hernoemen",
+  "files.renameLabel": "Nieuwe bestandsnaam",
+  "files.renameExt": "Extensie {ext} kan niet worden gewijzigd",
+  "toast.renameEmpty": "Voer een nieuwe bestandsnaam in",
+  "toast.renameSuccess": "Bestand hernoemd",
+  "toast.renameFailed": "Hernoemen mislukt",
+  "file.renameMissingParams": "Voer een nieuwe bestandsnaam in",
+  "file.renameDuplicate": "Er bestaat al een bestand met deze naam in deze map",
+  "file.renameSuccess": "Bestand hernoemd"
 }

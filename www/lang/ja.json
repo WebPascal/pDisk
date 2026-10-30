@@ -201,6 +201,8 @@
   "share.unlock": "ロック解除",
   "share.downloadFile": "ファイルをダウンロード",
   "share.notExist": "共有が存在しません",
+  "share.qr": "QRコード",
+  "share.qrFailed": "QRコードの生成に失敗しました",
   "share.paramIncomplete": "パラメータが不完全です",
   "share.sharedBy": "共有者",
   "share.pwdWrong": "パスワードが間違っています",
@@ -313,5 +315,15 @@
   "dl.retry": "再試行",
   "dl.remove": "削除",
   "dl.doneCount": "{n} 件完了",
-  "dl.failedCount": "{n} 件失敗"
+  "dl.failedCount": "{n} 件失敗",
+  "files.rename": "名前",
+  "files.renameTitle": "ファイル名を変更",
+  "files.renameLabel": "新しいファイル名",
+  "files.renameExt": "拡張子 {ext} は変更できません",
+  "toast.renameEmpty": "新しいファイル名を入力してください",
+  "toast.renameSuccess": "名前を変更しました",
+  "toast.renameFailed": "名前変更に失敗しました",
+  "file.renameMissingParams": "新しいファイル名を入力してください",
+  "file.renameDuplicate": "同じ名前のファイルがこのディレクトリに既にあります",
+  "file.renameSuccess": "名前を変更しました"
 }

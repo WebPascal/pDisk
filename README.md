@@ -9,15 +9,16 @@ A lightweight self-hosted cloud disk system built on WebPascal 5. Supports file 
 - **User registration & login** — JWT token authentication
 - **File upload** — drag-and-drop, multi-file queue, progress display, original filename preservation
 - **File download** — by original filename, with download progress list, multi-file concurrent download, and auto-save on completion
+- **File rename** — rename files from the file list (only the display name changes; the extension is locked and the actual stored file on the server is untouched); file names shown in existing shares are unaffected
 - **File sharing** — password-protected share links, view/download/play from share page
 - **Directory management** — create, browse, delete; tree view for cross-directory copy
 - **File preview** — images, audio, video, PDF, DOCX, XLSX, PPTX, common text files
-- **Music player** — playlist, play modes (sequential / random / loop), 8-second skip
+- **Music player** — playlist, play modes (sequential / random / single loop), 8-second skip
 - **Disk quota** — per-user quota, configurable default quota
 - **Admin panel** — user list / enable-disable / delete, file browsing, file deletion, share management
 - **Disk sync** — bidirectional calibration between filesystem and database, with size validation
 - **Multi-language** — 47 locale files, auto-detects browser language
-- **Responsive UI** — mobile and desktop, floating buttons with drag memory
+- **Responsive UI** — mobile and desktop, floating buttons are draggable and remember their position
 
 ## Requirements
 
@@ -77,9 +78,9 @@ pDisk/
 │   ├── register.api     # User registration
 │   ├── change_pwd.api   # Change password
 │   ├── upload.api       # File upload
-│   ├── upload2.api      # Upload (alt endpoint)
 │   ├── file_list.api    # List user files
 │   ├── file_copy.api    # Copy file to another directory
+│   ├── file_rename.api  # Rename file (display name)
 │   ├── file_delete.api  # Delete file
 │   ├── dir_create.api   # Create directory
 │   ├── dir_delete.api   # Delete directory
@@ -93,6 +94,7 @@ pDisk/
 │   ├── share_view.api   # View share page
 │   ├── share_my_list.api# List my shares
 │   ├── share_admin_list.api# Admin: list all shares
+│   ├── qrcode.api       # Generate QR code from URL
 │   ├── admin_user_list.api# Admin: user list
 │   ├── admin_user_toggle.api# Admin: enable/disable user
 │   ├── admin_user_delete.api# Admin: delete user
@@ -126,9 +128,9 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 | `/ask/register.api` | POST | Register (username, email, password) |
 | `/ask/change_pwd.api` | POST | Change password (token + old/new) |
 | `/ask/upload.api` | POST | Upload file (FormData) |
-| `/ask/upload2.api` | POST | Upload alternate |
 | `/ask/file_list.api` | GET | List files in directory |
 | `/ask/file_copy.api` | POST | Copy file (fid, target dir) |
+| `/ask/file_rename.api` | POST | Rename file (path, newName; display name only) |
 | `/ask/file_delete.api` | POST | Delete file (fid) |
 | `/ask/dir_create.api` | POST | Create directory (name, parent path) |
 | `/ask/dir_delete.api` | POST | Delete directory (path) |
@@ -142,6 +144,7 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 | `/ask/share_view.api` | GET | View share page |
 | `/ask/share_my_list.api` | GET | List my shares |
 | `/ask/share_admin_list.api` | GET | Admin: list all shares |
+| `/ask/qrcode.api` | POST | Generate QR code from `url` parameter, returns base64 PNG (JWT-protected) |
 | `/ask/admin_user_list.api` | GET | Admin: user list |
 | `/ask/admin_user_toggle.api` | POST | Admin: enable/disable user |
 | `/ask/admin_user_delete.api` | POST | Admin: delete user |
@@ -159,6 +162,13 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 
 > `+` add · `>` fix · `-` remove · `^` adjust
 
+### 1.13
+- `+` Added a "Rename" button to the file list; click it to change the file's displayed name;
+- `+` The file extension cannot be modified when renaming, and file names in already-created shared links are not changed;
+- `+` Added orange "QR Code" button to share items (My Shares and Admin > Share Management); click to show the share URL as a scannable QR code in a dialog;
+- `+` "Share Created" result dialog now displays the QR code above the copy-link button;
+- `+` New backend API `/ask/qrcode.api` — accepts a `url` parameter (JWT-protected) and returns a base64 PNG QR code.
+
 ### 1.12
 - `+` Added a download floating button at the bottom-right (above the upload button); tap to open the download task list;
 - `+` The download task list shows real-time progress for each file (percentage, downloaded size, download speed);
@@ -167,13 +177,13 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 - `^` File downloads across the drive, share, and admin pages now go through the unified download list with live progress.
 
 ### 1.11
-- `>` Fix the issue with the upload floating button handling the title attribute;
+- `>` Fixed the issue with the upload floating button handling the title attribute;
 - `>` Fixed issues in the upload feature where the file list was overwritten, counts were inaccurate, files were uploaded repeatedly, and the completion notification showed incorrect counts.
 
 ### 1.10
 - `>` Fixed user admin "allow registration" checkbox not reflecting database config;
 - `>` Fixed settings table write failure when key value was empty;
-- `+` Added global upload floating button, visible after login, supports drag and position memory;
+- `+` Added global upload floating button, visible after login, draggable and remembers its position;
 - `+` Added upload dialog showing target directory (root or subdirectory);
 - `+` Added toast notification after upload FAB operations;
 - `+` Language pack: added `btn.close` key across 47 locale files;
@@ -186,8 +196,8 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 - `>` Fixed DOCX/TXT preview full-screen issue on mobile, added margins.
 
 ### 1.8
-- `+` Backend load indicator on cloud/share pages;
-- `+` Download start notification for file operations;
+- `+` Backend load indicator in the top-right corner of cloud/share pages, showing current service busyness at a glance;
+- `+` Download start notification for file operations, same as in multi-select;
 - `+` File preview: pdf/docx/xlsx/pptx;
 - `+` Common text file preview: txt/log/sha/ini/conf/cfg/md/json/xml/html/css/js;
 - `+` Auto-detect UTF-8/GBK encoding for text files;
@@ -203,7 +213,7 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 - `^` Preserve selection after sharing in multi-select.
 
 ### 1.6
-- `+` All UI messages support multi-language (47 locales);
+- `+` All UI messages support multi-language (47 locales), including success/failure notifications and error messages;
 - `+` 65 new translation keys covering all operation scenarios;
 - `+` File sharing with password protection;
 - `+` Share page: image preview, audio player, video player;
@@ -212,32 +222,32 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 - `+` "My Shares" on home page;
 - `+` Admin share management;
 - `+` Upload speed indicator;
-- `+` File sorting by name/time;
+- `+` File sorting by name/time (cloud disk and share pages);
 - `+` User file download by original filename;
-- `^` Batch action buttons float below select-all, stay visible on scroll.
+- `^` Batch action buttons float below select-all, stay visible on scroll, without taking up page space.
 
 ### 1.5
 - `+` Admin file preview: image, audio, video;
-- `+` Admin multi-select batch play (audio filtered);
-- `^` Admin file action buttons changed to expand/collapse mode.
+- `+` Admin multi-select batch play (non-audio files auto-filtered out, audio added to playlist);
+- `^` Admin file action buttons changed to expand/collapse mode (circular ‹ button), consistent with file list.
 
 ### 1.4
-- `+` Auto-logout on token verification failure;
+- `+` Auto-logout on token verification failure: clears login info, redirects to login page, and hides the bottom navigation;
 - `+` Single file delete dialog shows filename;
 - `+` Admin user delete (DB record + directory);
-- `+` Back-to-top floating button (shows after 300px scroll);
+- `+` Back-to-top floating button (shows after 300px scroll, doesn't block bottom navigation);
 - `^` CSS/JS extracted to separate files;
 - `^` Bottom nav hidden by default, shown after login;
-- `^` Admin user list: expand/collapse action buttons, orange for disabled;
+- `^` Admin user list: expand/collapse action buttons (circular ‹ button), orange for disabled;
 - `^` Admin user display format: Nickname (Username);
 - `^` Copy dialog: prefer original filename;
 - `^` File list action buttons auto-close on outside click;
 - `^` File list action buttons use absolute positioning to avoid row height changes.
 
 ### 1.3
-- `>` Fixed original filename truncation for files with spaces;
-- `>` Fixed original filename loss on file copy;
-- `>` Fixed preview/play/copy failures for file URLs with spaces;
+- `>` Fixed original filename truncation for files with spaces (now passed via FormData);
+- `>` Fixed original filename loss on file copy (frontend now passes the original filename, backend prefers it);
+- `>` Fixed preview/play/copy failures for file URLs with spaces (file paths now URI-encoded);
 - `>` Quota read from DB instead of hardcoded 1GB;
 - `+` Generated Language.txt locale file list;
 - `^` File action buttons changed to expand/collapse mode.
@@ -248,9 +258,11 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 - `+` Multi-language support (i18n), auto browser language detection;
 - `+` Auto-load matching locale file, fallback to English;
 - `+` Image preview with close button;
-- `+` Video inline player;
-- `+` Music floating player with playlist, modes, 8s skip;
-- `+` Multi-file batch play;
+- `+` Video inline player with close button and autoplay;
+- `+` Tapping a music file opens a draggable floating player bar with loop, play/pause, stop, progress seek, and close controls;
+- `+` Music player: playlist, previous/next, play mode switching (sequential / random / single loop);
+- `+` 8-second forward/backward skip checkbox in the music player;
+- `+` Multi-file batch play (non-audio files auto-filtered into playlist);
 - `+` Password visibility toggle on login/register;
 - `+` Multi-file upload with drag-and-drop and per-file progress;
 - `+` File list multi-select with batch delete/copy;
@@ -286,11 +298,12 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 - `+` File copy across directories;
 - `+` File delete;
 - `+` Disk quota management;
-- `+` Recent uploads on home page;
-- `+` Admin user management (enable/disable/delete);
+- `+` Recent uploads on home page (shows the last 5 files);
+- `+` Admin user management (enable/disable);
 - `+` Admin file browsing and deletion;
+- `+` Admin deletion of user files and directories;
 - `+` Password reset flow (request → approve → reset);
-- `-` Removed temporary test scripts.
+- `-` Removed temporary test scripts (test_basic / test_dir / test_funcs).
 
 ## License
 

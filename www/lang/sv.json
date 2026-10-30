@@ -201,6 +201,8 @@
   "share.unlock": "Lås upp",
   "share.downloadFile": "Ladda ner fil",
   "share.notExist": "Delning finns inte",
+  "share.qr": "QR-kod",
+  "share.qrFailed": "Att generera QR-kod misslyckades",
   "share.paramIncomplete": "Ofullständiga parametrar",
   "share.sharedBy": "Delad av",
   "share.pwdWrong": "Fel lösenord",
@@ -313,5 +315,15 @@
   "dl.retry": "Försök igen",
   "dl.remove": "Ta bort",
   "dl.doneCount": "{n} klara",
-  "dl.failedCount": "{n} misslyckades"
+  "dl.failedCount": "{n} misslyckades",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

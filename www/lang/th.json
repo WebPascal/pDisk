@@ -201,6 +201,8 @@
   "share.unlock": "ปลดล็อก",
   "share.downloadFile": "ดาวน์โหลดไฟล์",
   "share.notExist": "การแชร์ไม่มีอยู่",
+  "share.qr": "รหัส QR",
+  "share.qrFailed": "สร้างรหัส QR ไม่สำเร็จ",
   "share.paramIncomplete": "พารามิเตอร์ไม่ครบถ้วน",
   "share.sharedBy": "แชร์โดย",
   "share.pwdWrong": "รหัสผ่านผิด",
@@ -313,5 +315,15 @@
   "dl.retry": "ลองใหม่",
   "dl.remove": "ลบ",
   "dl.doneCount": "{n} เสร็จสิ้น",
-  "dl.failedCount": "{n} ล้มเหลว"
+  "dl.failedCount": "{n} ล้มเหลว",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

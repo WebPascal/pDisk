@@ -201,6 +201,8 @@
   "share.unlock": "Déverrouiller",
   "share.downloadFile": "Télécharger le fichier",
   "share.notExist": "Le partage n'existe pas",
+  "share.qr": "Code QR",
+  "share.qrFailed": "Échec de la génération du code QR",
   "share.paramIncomplete": "Paramètres incomplets",
   "share.sharedBy": "Partagé par",
   "share.pwdWrong": "Mot de passe incorrect",
@@ -313,5 +315,15 @@
   "dl.retry": "Réessayer",
   "dl.remove": "Retirer",
   "dl.doneCount": "{n} terminés",
-  "dl.failedCount": "{n} en échec"
+  "dl.failedCount": "{n} en échec",
+  "files.rename": "Nom",
+  "files.renameTitle": "Renommer le fichier",
+  "files.renameLabel": "Nouveau nom de fichier",
+  "files.renameExt": "L'extension {ext} ne peut pas être modifiée",
+  "toast.renameEmpty": "Veuillez saisir un nouveau nom de fichier",
+  "toast.renameSuccess": "Fichier renommé",
+  "toast.renameFailed": "Échec du renommage",
+  "file.renameMissingParams": "Veuillez saisir un nouveau nom de fichier",
+  "file.renameDuplicate": "Un fichier portant ce nom existe déjà dans ce répertoire",
+  "file.renameSuccess": "Fichier renommé"
 }

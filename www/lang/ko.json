@@ -201,6 +201,8 @@
   "share.unlock": "잠금 해제",
   "share.downloadFile": "파일 다운로드",
   "share.notExist": "공유가 존재하지 않습니다",
+  "share.qr": "QR 코드",
+  "share.qrFailed": "QR 코드 생성 실패",
   "share.paramIncomplete": "매개변수가 불완전합니다",
   "share.sharedBy": "공유자",
   "share.pwdWrong": "비밀번호가 틀렸습니다",
@@ -313,5 +315,15 @@
   "dl.retry": "재시도",
   "dl.remove": "삭제",
   "dl.doneCount": "{n}개 완료",
-  "dl.failedCount": "{n}개 실패"
+  "dl.failedCount": "{n}개 실패",
+  "files.rename": "이름",
+  "files.renameTitle": "파일 이름 변경",
+  "files.renameLabel": "새 파일 이름",
+  "files.renameExt": "확장자 {ext}는 변경할 수 없습니다",
+  "toast.renameEmpty": "새 파일 이름을 입력하세요",
+  "toast.renameSuccess": "이름이 변경되었습니다",
+  "toast.renameFailed": "이름 변경 실패",
+  "file.renameMissingParams": "새 파일 이름을 입력하세요",
+  "file.renameDuplicate": "동일한 이름의 파일이 이미 이 디렉터리에 있습니다",
+  "file.renameSuccess": "이름이 변경되었습니다"
 }

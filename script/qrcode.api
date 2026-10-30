@@ -1,0 +1,18 @@
+include('/verify_token.api');
+
+try
+  var url := URLEncode.Decode(request.Params['url'], false);
+  if (url = '') then
+  begin
+    writeln('{"code":400,"msg":"share.paramIncomplete"}');
+    exit;
+  end;
+  var ret := json.NewObject;
+  ret.code := 200;
+  ret.data := QRCode(url, 100);
+  writeln(json.stringify(ret));
+except on E : Exception do
+begin
+  writeln('{"code":500,"msg":"share.qrFailed"}');
+end;
+end;

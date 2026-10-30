@@ -201,6 +201,8 @@
   "share.unlock": "ಅನ್‌ಲಾಕ್",
   "share.downloadFile": "ಫೈಲ್ ಡೌನ್‌ಲೋಡ್",
   "share.notExist": "ಹಂಚಿಕೆ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ",
+  "share.qr": "QR ಕೋಡ್",
+  "share.qrFailed": "QR ಕೋಡ್ ರಚನೆ ವಿಫಲವಾಯಿತು",
   "share.paramIncomplete": "ಅಪೂರ್ಣ ನಿಯತಾಂಕಗಳು",
   "share.sharedBy": "ಹಂಚಿಕೊಂಡವರು",
   "share.pwdWrong": "ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್",
@@ -313,5 +315,15 @@
   "dl.retry": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
   "dl.remove": "ತೆಗೆದುಹಾಕಿ",
   "dl.doneCount": "{n} ಪೂರ್ಣ",
-  "dl.failedCount": "{n} ವಿಫಲ"
+  "dl.failedCount": "{n} ವಿಫಲ",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

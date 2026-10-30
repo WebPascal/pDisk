@@ -201,6 +201,8 @@
   "share.unlock": "باز کردن قفل",
   "share.downloadFile": "دانلود فایل",
   "share.notExist": "اشتراک وجود ندارد",
+  "share.qr": "کد QR",
+  "share.qrFailed": "ساخت کد QR ناموفق بود",
   "share.paramIncomplete": "پارامترهای ناقص",
   "share.sharedBy": "اشتراک‌گذارنده",
   "share.pwdWrong": "رمز عبور اشتباه است",
@@ -313,5 +315,15 @@
   "dl.retry": "تلاش دوباره",
   "dl.remove": "حذف",
   "dl.doneCount": "{n} انجام شد",
-  "dl.failedCount": "{n} ناموفق"
+  "dl.failedCount": "{n} ناموفق",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

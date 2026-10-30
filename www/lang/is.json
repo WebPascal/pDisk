@@ -201,6 +201,8 @@
   "share.unlock": "Aflæsa",
   "share.downloadFile": "Sækja skrá",
   "share.notExist": "Deiling er ekki til",
+  "share.qr": "QR-kóði",
+  "share.qrFailed": "QR-kóða framleiðsla mistókst",
   "share.paramIncomplete": "Ókláraðar breytur",
   "share.sharedBy": "Deilt af",
   "share.pwdWrong": "Rangt lykilorð",
@@ -313,5 +315,15 @@
   "dl.retry": "Reyna aftur",
   "dl.remove": "Fjarlægja",
   "dl.doneCount": "{n} klárt",
-  "dl.failedCount": "{n} mistókst"
+  "dl.failedCount": "{n} mistókst",
+  "files.rename": "Rename",
+  "files.renameTitle": "Rename File",
+  "files.renameLabel": "New file name",
+  "files.renameExt": "Extension {ext} cannot be changed",
+  "toast.renameEmpty": "Please enter a new file name",
+  "toast.renameSuccess": "Renamed successfully",
+  "toast.renameFailed": "Rename failed",
+  "file.renameMissingParams": "Please enter a new file name",
+  "file.renameDuplicate": "A file with the same name already exists in this directory",
+  "file.renameSuccess": "Renamed successfully"
 }

@@ -201,6 +201,8 @@
   "share.unlock": "Mở khóa",
   "share.downloadFile": "Tải xuống tệp",
   "share.notExist": "Chia sẻ không tồn tại",
+  "share.qr": "Mã QR",
+  "share.qrFailed": "Tạo mã QR thất bại",
   "share.paramIncomplete": "Tham số không đầy đủ",
   "share.sharedBy": "Chia sẻ bởi",
   "share.pwdWrong": "Mật khẩu sai",
@@ -313,5 +315,15 @@
   "dl.retry": "Thử lại",
   "dl.remove": "Xóa",
   "dl.doneCount": "{n} đã hoàn thành",
-  "dl.failedCount": "{n} thất bại"
+  "dl.failedCount": "{n} thất bại",
+  "files.rename": "Tên",
+  "files.renameTitle": "Đổi tên tệp",
+  "files.renameLabel": "Tên tệp mới",
+  "files.renameExt": "Không thể thay đổi phần mở rộng {ext}",
+  "toast.renameEmpty": "Vui lòng nhập tên tệp mới",
+  "toast.renameSuccess": "Đã đổi tên",
+  "toast.renameFailed": "Đổi tên thất bại",
+  "file.renameMissingParams": "Vui lòng nhập tên tệp mới",
+  "file.renameDuplicate": "Đã có tệp cùng tên trong thư mục này",
+  "file.renameSuccess": "Đã đổi tên"
 }
