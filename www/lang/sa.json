@@ -127,6 +127,7 @@
   "disk.used": "प्रयुक्तम्",
   "disk.total": "कुलम्",
   "disk.free": "रिक्तम्",
+  "disk.capacity": "Storage",
   "changePwd.title": "सङ्केतपदपरिवर्तनम्",
   "changePwd.oldPwd": "पुरातनं सङ्केतपदम्",
   "changePwd.newPwd": "नूतनं सङ्केतपदम्",

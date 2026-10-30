@@ -127,6 +127,7 @@
   "disk.used": "Usado",
   "disk.total": "Total",
   "disk.free": "Livre",
+  "disk.capacity": "Armazenamento",
   "changePwd.title": "Alterar Senha",
   "changePwd.oldPwd": "Senha Antiga",
   "changePwd.newPwd": "Nova Senha",

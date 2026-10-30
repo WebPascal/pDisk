@@ -127,6 +127,7 @@
   "disk.used": "בשימוש",
   "disk.total": "סה״כ",
   "disk.free": "פנוי",
+  "disk.capacity": "Storage",
   "changePwd.title": "שנה סיסמה",
   "changePwd.oldPwd": "סיסמה ישנה",
   "changePwd.newPwd": "סיסמה חדשה",

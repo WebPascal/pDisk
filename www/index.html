@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title data-i18n="app.title">pDisk 云盘</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -154,16 +154,32 @@
   </div>
 </div>
 
-<!-- ===== Page: Home (Upload) ===== -->
+<!-- ===== Page: Home ===== -->
 <div class="page" id="page-home">
-  <div class="card">
-    <div class="upload-area" id="uploadArea">
-      <div class="upload-icon"><svg class="icon icon-lg"><use href="#icon-cloud-upload"/></svg></div>
-      <div class="upload-text" data-i18n="upload.clickOrDrag">点击选择文件 或 拖拽文件到此处</div>
-      <div class="upload-hint" data-i18n="upload.supportedFormats">支持任意格式文件，可多选</div>
-      <input type="file" id="fileInput" style="display:none" multiple>
-      <div class="upload-queue" id="uploadQueue"></div>
-      <div class="upload-summary" id="uploadSummary"></div>
+  <div class="card home-disk-card">
+    <div class="home-disk-head">
+      <div class="home-disk-title" data-i18n="disk.capacity">存储</div>
+      <div class="home-disk-pct" id="homeDiskPercentText">0%</div>
+    </div>
+    <div class="home-disk-bar"><div class="home-disk-bar-fill" id="homeDiskBarFill" style="width:0%;"></div></div>
+    <div class="home-disk-stats">
+      <div class="home-disk-stat">
+        <div class="stat-value" id="homeDiskUsed">0 B</div>
+        <div class="stat-label" data-i18n="disk.used">已用</div>
+      </div>
+      <div class="home-disk-stat">
+        <div class="stat-value" id="homeDiskTotal">0 B</div>
+        <div class="stat-label" data-i18n="disk.total">总量</div>
+      </div>
+      <div class="home-disk-stat">
+        <div class="stat-value" id="homeDiskFree">0 B</div>
+        <div class="stat-label" data-i18n="disk.free">剩余</div>
+      </div>
+    </div>
+    <div class="home-quick-row">
+      <button class="home-quick-btn" onclick="toggleUploadDialog(true)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.07"/></svg> <span data-i18n="upload.fab.label">上传</span></button>
+      <button class="home-quick-btn" onclick="toggleDownloadDialog(true)"><svg class="icon"><use href="#icon-download"/></svg> <span data-i18n="dl.fab.label">下载</span></button>
+      <button class="home-quick-btn" onclick="navigateTo('files')"><svg class="icon"><use href="#icon-folder"/></svg> <span data-i18n="nav.files">文件</span></button>
     </div>
   </div>
 

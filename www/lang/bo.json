@@ -127,6 +127,7 @@
   "disk.used": "བཀོལ་ཟིན།",
   "disk.total": "སྤྱིའི་བསྡོམས།",
   "disk.free": "སྟོང་ཆ།",
+  "disk.capacity": "Storage",
   "changePwd.title": "གསང་ཚིག་བརྗེ་བ།",
   "changePwd.oldPwd": "གསང་ཚིག་རྙིང་པ།",
   "changePwd.newPwd": "གསང་ཚིག་གསར་པ།",

@@ -127,6 +127,7 @@
   "disk.used": "Использовано",
   "disk.total": "Всего",
   "disk.free": "Свободно",
+  "disk.capacity": "Хранилище",
   "changePwd.title": "Смена пароля",
   "changePwd.oldPwd": "Старый пароль",
   "changePwd.newPwd": "Новый пароль",

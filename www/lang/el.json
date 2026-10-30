@@ -127,6 +127,7 @@
   "disk.used": "Χρησιμοποιημένο",
   "disk.total": "Συνολικό",
   "disk.free": "Ελεύθερο",
+  "disk.capacity": "Storage",
   "changePwd.title": "Αλλαγή κωδικού",
   "changePwd.oldPwd": "Παλιός κωδικός",
   "changePwd.newPwd": "Νέος κωδικός",

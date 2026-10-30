@@ -127,6 +127,7 @@
   "disk.used": "Brugt",
   "disk.total": "Total",
   "disk.free": "Ledig",
+  "disk.capacity": "Storage",
   "changePwd.title": "Skift adgangskode",
   "changePwd.oldPwd": "Gammel adgangskode",
   "changePwd.newPwd": "Ny adgangskode",

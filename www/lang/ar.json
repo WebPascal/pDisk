@@ -127,6 +127,7 @@
   "disk.used": "المستخدم",
   "disk.total": "الإجمالي",
   "disk.free": "المتاح",
+  "disk.capacity": "التخزين",
   "changePwd.title": "تغيير كلمة المرور",
   "changePwd.oldPwd": "كلمة المرور القديمة",
   "changePwd.newPwd": "كلمة المرور الجديدة",

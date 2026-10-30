@@ -127,6 +127,7 @@
   "disk.used": "Đã Dùng",
   "disk.total": "Tổng",
   "disk.free": "Còn Trống",
+  "disk.capacity": "Storage",
   "changePwd.title": "Đổi Mật Khẩu",
   "changePwd.oldPwd": "Mật Khẩu Cũ",
   "changePwd.newPwd": "Mật Khẩu Mới",

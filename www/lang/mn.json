@@ -127,6 +127,7 @@
   "disk.used": "Ашигласан",
   "disk.total": "Нийт",
   "disk.free": "Чөлөөт",
+  "disk.capacity": "Storage",
   "changePwd.title": "Нууц үг солих",
   "changePwd.oldPwd": "Хуучин нууц үг",
   "changePwd.newPwd": "Шинэ нууц үг",

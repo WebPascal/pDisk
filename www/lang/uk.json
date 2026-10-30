@@ -127,6 +127,7 @@
   "disk.used": "Використано",
   "disk.total": "Всього",
   "disk.free": "Вільно",
+  "disk.capacity": "Storage",
   "changePwd.title": "Змінити пароль",
   "changePwd.oldPwd": "Старий пароль",
   "changePwd.newPwd": "Новий пароль",

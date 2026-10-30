@@ -127,6 +127,7 @@
   "disk.used": "使用中",
   "disk.total": "合計",
   "disk.free": "空き",
+  "disk.capacity": "ストレージ",
   "changePwd.title": "パスワード変更",
   "changePwd.oldPwd": "現在のパスワード",
   "changePwd.newPwd": "新しいパスワード",

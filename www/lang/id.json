@@ -127,6 +127,7 @@
   "disk.used": "Terpakai",
   "disk.total": "Total",
   "disk.free": "Tersedia",
+  "disk.capacity": "Storage",
   "changePwd.title": "Ubah Kata Sandi",
   "changePwd.oldPwd": "Kata Sandi Lama",
   "changePwd.newPwd": "Kata Sandi Baru",

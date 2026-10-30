@@ -127,6 +127,7 @@
   "disk.used": "Brukt",
   "disk.total": "Totalt",
   "disk.free": "Ledig",
+  "disk.capacity": "Storage",
   "changePwd.title": "Endre Passord",
   "changePwd.oldPwd": "Gammelt Passord",
   "changePwd.newPwd": "Nytt Passord",

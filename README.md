@@ -162,6 +162,16 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 
 > `+` add · `>` fix · `-` remove · `^` adjust
 
+### 1.14
+- `+` Replaced the home page "Upload Area" card with a "Storage" card: a horizontal progress bar shows the used percentage, with Used / Total / Free figures side by side below;
+- `+` The storage card includes a quick-actions row (Upload / Download / Files) so common actions are reachable without switching pages;
+- `+` The upload and share dialogs can now be closed by clicking the dimmed overlay, matching the download dialog;
+- `+` Bottom navigation bar now automatically adapts its height to the iOS full-screen safe area, so content is no longer covered by the home indicator;
+- `-` Removed the old home "Upload Area" card; uploading is now handled by the floating upload button and the upload dialog;
+- `^` The quick-action upload icon now matches the floating upload button's appearance;
+- `^` The progress bar and percentage use tiered colors: base blue `#3ba6f9` (<70%) / orange (70–90%) / red (>90%);
+- `^` Added the `disk.capacity` key (Storage) to the language packs, synced across 47 language files.
+
 ### 1.13
 - `+` Added a "Rename" button to the file list; click it to change the file's displayed name;
 - `+` The file extension cannot be modified when renaming, and file names in already-created shared links are not changed;

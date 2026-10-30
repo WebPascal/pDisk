@@ -127,6 +127,7 @@
   "disk.used": "Kullanılan",
   "disk.total": "Toplam",
   "disk.free": "Boş",
+  "disk.capacity": "Storage",
   "changePwd.title": "Şifre Değiştir",
   "changePwd.oldPwd": "Eski Şifre",
   "changePwd.newPwd": "Yeni Şifre",

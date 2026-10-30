@@ -127,6 +127,7 @@
   "disk.used": "ئىشلىتىلگەن",
   "disk.total": "جەمئىي",
   "disk.free": "بوش",
+  "disk.capacity": "Storage",
   "changePwd.title": "پارول ئۆزگەرتىش",
   "changePwd.oldPwd": "كونا پارول",
   "changePwd.newPwd": "يېڭى پارول",

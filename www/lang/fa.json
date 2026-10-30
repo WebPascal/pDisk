@@ -127,6 +127,7 @@
   "disk.used": "استفاده شده",
   "disk.total": "کل",
   "disk.free": "آزاد",
+  "disk.capacity": "Storage",
   "changePwd.title": "تغییر رمز عبور",
   "changePwd.oldPwd": "رمز عبور قدیمی",
   "changePwd.newPwd": "رمز عبور جدید",

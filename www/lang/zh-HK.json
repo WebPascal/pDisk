@@ -127,6 +127,7 @@
   "disk.used": "已用",
   "disk.total": "總量",
   "disk.free": "剩餘",
+  "disk.capacity": "儲存容量",
   "changePwd.title": "修改密碼",
   "changePwd.oldPwd": "舊密碼",
   "changePwd.newPwd": "新密碼",

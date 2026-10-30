@@ -127,6 +127,7 @@
   "disk.used": "Notað",
   "disk.total": "Alls",
   "disk.free": "Laust",
+  "disk.capacity": "Storage",
   "changePwd.title": "Breyta lykilorði",
   "changePwd.oldPwd": "Gamalt lykilorð",
   "changePwd.newPwd": "Nýtt lykilorð",

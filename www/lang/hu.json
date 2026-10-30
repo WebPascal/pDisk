@@ -127,6 +127,7 @@
   "disk.used": "Felhasznált",
   "disk.total": "Összes",
   "disk.free": "Szabad",
+  "disk.capacity": "Storage",
   "changePwd.title": "Jelszó módosítása",
   "changePwd.oldPwd": "Régi jelszó",
   "changePwd.newPwd": "Új jelszó",

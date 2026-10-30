@@ -127,6 +127,7 @@
   "disk.used": "ใช้แล้ว",
   "disk.total": "ทั้งหมด",
   "disk.free": "ว่าง",
+  "disk.capacity": "Storage",
   "changePwd.title": "เปลี่ยนรหัสผ่าน",
   "changePwd.oldPwd": "รหัสผ่านเก่า",
   "changePwd.newPwd": "รหัสผ่านใหม่",

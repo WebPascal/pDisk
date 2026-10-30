@@ -369,7 +369,7 @@ function navigateTo(page) {
   document.getElementById('pageTitle').textContent = t(titles[page] || 'app.title');
 
   // Page-specific init
-  if (page === 'home') { loadRecentFiles(); loadMyShares(); }
+  if (page === 'home') { loadHomeDiskInfo(); loadRecentFiles(); loadMyShares(); }
   if (page === 'files') loadFileList();
   if (page === 'profile') loadProfile();
   if (page === 'admin') loadAdminData();
@@ -864,15 +864,36 @@ function bindUploadArea(areaEl, inputEl, onFiles) {
   });
 }
 
-// ===== 首页上传区 IIFE =====
-(function() {
-  var uploadArea = document.getElementById('uploadArea');
-  var fileInput = document.getElementById('fileInput');
-  if (!uploadArea || !fileInput) return;
-  bindUploadArea(uploadArea, fileInput, function(files) {
-    startUpload(files, ''); // 首页固定上传到根目录
+
+
+
+// ===== 首页磁盘容量 =====
+function loadHomeDiskInfo() {
+  var token = getToken();
+  if (!token) return;
+  postRequest('disk_info.api', { token: token }, function(err, res) {
+    if (err || res.code !== 200 || !res.data) return;
+    var d = res.data;
+    var usedPct = d.usedPercent || 0;
+    var tier = usedPct > 90 ? 'danger' : (usedPct >= 70 ? 'warn' : 'ok');
+    var fill = document.getElementById('homeDiskBarFill');
+    var pct = document.getElementById('homeDiskPercentText');
+    var used = document.getElementById('homeDiskUsed');
+    var total = document.getElementById('homeDiskTotal');
+    var free = document.getElementById('homeDiskFree');
+    if (fill) {
+      fill.style.width = Math.min(100, usedPct) + '%';
+      fill.className = 'home-disk-bar-fill tier-' + tier;
+    }
+    if (pct) {
+      pct.textContent = (usedPct % 1 === 0 ? usedPct : usedPct.toFixed(1)) + '%';
+      pct.className = 'home-disk-pct tier-' + tier;
+    }
+    if (used) used.textContent = d.usedStr || formatSize(d.used || 0);
+    if (total) total.textContent = d.quotaStr || formatSize(d.quota || 0);
+    if (free) free.textContent = d.freeStr || formatSize(d.free || 0);
   });
-})();
+}
 
 // ===== 上传对话框 IIFE =====
 (function() {
@@ -902,6 +923,11 @@ function bindUploadArea(areaEl, inputEl, onFiles) {
       hint.style.display = 'block';
     }
   };
+
+  // 点击遮罩关闭（与下载对话框行为一致）
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) toggleUploadDialog(false);
+  });
 })();
 
 // ===== 上传对话框 显示/隐藏 切换（FAB 与对话框共用，显示/隐藏不中断进行中的上传） =====
@@ -2253,6 +2279,10 @@ function showShareDialog() {
     '</div>';
   document.body.appendChild(overlay);
   _dialogOverlay = overlay;
+  // 点击遮罩关闭（与上传/下载对话框行为一致）
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeShareDialog();
+  });
   renderShareFiles();
 }
 

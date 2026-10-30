@@ -127,6 +127,7 @@
   "disk.used": "ಬಳಸಲಾಗಿದೆ",
   "disk.total": "ಒಟ್ಟು",
   "disk.free": "ಉಚಿತ",
+  "disk.capacity": "Storage",
   "changePwd.title": "ಪಾಸ್ವರ್ಡ್ ಬದಲಾಯಿಸಿ",
   "changePwd.oldPwd": "ಹಳೆಯ ಪಾಸ್ವರ್ಡ್",
   "changePwd.newPwd": "ಹೊಸ ಪಾಸ್ವರ್ಡ್",

@@ -127,6 +127,7 @@
   "disk.used": "Använt",
   "disk.total": "Totalt",
   "disk.free": "Ledigt",
+  "disk.capacity": "Storage",
   "changePwd.title": "Byt Lösenord",
   "changePwd.oldPwd": "Gammalt Lösenord",
   "changePwd.newPwd": "Nytt Lösenord",

@@ -127,6 +127,7 @@
   "disk.used": "ఉపయోగించినది",
   "disk.total": "మొత్తం",
   "disk.free": "ఖాళీ",
+  "disk.capacity": "Storage",
   "changePwd.title": "పాస్‌వర్డ్ మార్చండి",
   "changePwd.oldPwd": "పాత పాస్‌వర్డ్",
   "changePwd.newPwd": "కొత్త పాస్‌వర్డ్",

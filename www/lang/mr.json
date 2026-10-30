@@ -127,6 +127,7 @@
   "disk.used": "वापरलेले",
   "disk.total": "एकूण",
   "disk.free": "मोकळे",
+  "disk.capacity": "Storage",
   "changePwd.title": "पासवर्ड बदला",
   "changePwd.oldPwd": "जुना पासवर्ड",
   "changePwd.newPwd": "नवीन पासवर्ड",

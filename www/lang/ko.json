@@ -127,6 +127,7 @@
   "disk.used": "사용량",
   "disk.total": "전체",
   "disk.free": "여유",
+  "disk.capacity": "스토리지",
   "changePwd.title": "비밀번호 변경",
   "changePwd.oldPwd": "기존 비밀번호",
   "changePwd.newPwd": "새 비밀번호",

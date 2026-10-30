@@ -127,6 +127,7 @@
   "disk.used": "Belegt",
   "disk.total": "Gesamt",
   "disk.free": "Frei",
+  "disk.capacity": "Speicher",
   "changePwd.title": "Passwort ändern",
   "changePwd.oldPwd": "Altes Passwort",
   "changePwd.newPwd": "Neues Passwort",

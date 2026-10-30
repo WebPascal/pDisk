@@ -127,6 +127,7 @@
   "disk.used": "Gebruikt",
   "disk.total": "Totaal",
   "disk.free": "Vrij",
+  "disk.capacity": "Storage",
   "changePwd.title": "Wachtwoord Wijzigen",
   "changePwd.oldPwd": "Oud Wachtwoord",
   "changePwd.newPwd": "Nieuw Wachtwoord",

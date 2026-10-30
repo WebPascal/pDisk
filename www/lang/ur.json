@@ -127,6 +127,7 @@
   "disk.used": "استعمال شدہ",
   "disk.total": "کل",
   "disk.free": "مفت",
+  "disk.capacity": "Storage",
   "changePwd.title": "پاس ورڈ تبدیل کریں",
   "changePwd.oldPwd": "پرانا پاس ورڈ",
   "changePwd.newPwd": "نیا پاس ورڈ",

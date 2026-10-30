@@ -127,6 +127,7 @@
   "disk.used": "Utilizat",
   "disk.total": "Total",
   "disk.free": "Liber",
+  "disk.capacity": "Storage",
   "changePwd.title": "Schimbă parola",
   "changePwd.oldPwd": "Parola veche",
   "changePwd.newPwd": "Parola nouă",

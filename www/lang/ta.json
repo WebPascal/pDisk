@@ -127,6 +127,7 @@
   "disk.used": "பயன்படுத்தப்பட்டது",
   "disk.total": "மொத்தம்",
   "disk.free": "காலி",
+  "disk.capacity": "Storage",
   "changePwd.title": "கடவுச்சொல்லை மாற்று",
   "changePwd.oldPwd": "பழைய கடவுச்சொல்",
   "changePwd.newPwd": "புதிய கடவுச்சொல்",

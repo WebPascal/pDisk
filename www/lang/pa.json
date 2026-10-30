@@ -127,6 +127,7 @@
   "disk.used": "ਵਰਤਿਆ",
   "disk.total": "ਕੁੱਲ",
   "disk.free": "ਮੁਫ਼ਤ",
+  "disk.capacity": "Storage",
   "changePwd.title": "ਪਾਸਵਰਡ ਬਦਲੋ",
   "changePwd.oldPwd": "ਪੁਰਾਣਾ ਪਾਸਵਰਡ",
   "changePwd.newPwd": "ਨਵਾਂ ਪਾਸਵਰਡ",

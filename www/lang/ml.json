@@ -127,6 +127,7 @@
   "disk.used": "ഉപയോഗിച്ചത്",
   "disk.total": "ആകെ",
   "disk.free": "സ്വതന്ത്രം",
+  "disk.capacity": "Storage",
   "changePwd.title": "പാസ്‌വേഡ് മാറ്റുക",
   "changePwd.oldPwd": "പഴയ പാസ്‌വേഡ്",
   "changePwd.newPwd": "പുതിയ പാസ്‌വേഡ്",

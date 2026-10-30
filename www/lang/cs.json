@@ -127,6 +127,7 @@
   "disk.used": "Využito",
   "disk.total": "Celkem",
   "disk.free": "Volné",
+  "disk.capacity": "Storage",
   "changePwd.title": "Změna hesla",
   "changePwd.oldPwd": "Staré heslo",
   "changePwd.newPwd": "Nové heslo",

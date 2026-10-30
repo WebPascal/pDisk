@@ -127,6 +127,7 @@
   "disk.used": "ব্যবহৃত",
   "disk.total": "মোট",
   "disk.free": "মুক্ত",
+  "disk.capacity": "Storage",
   "changePwd.title": "পাসওয়ার্ড পরিবর্তন",
   "changePwd.oldPwd": "পুরানো পাসওয়ার্ড",
   "changePwd.newPwd": "নতুন পাসওয়ার্ড",
