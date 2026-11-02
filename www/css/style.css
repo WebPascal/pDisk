@@ -184,7 +184,7 @@ input, button, select, textarea { font-family: inherit; font-size: inherit; outl
 .home-disk-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .home-disk-title { font-size: 15px; font-weight: 600; color: #333; }
 .home-disk-pct { font-size: 14px; font-weight: 600; color: #3ba6f9; }
-.home-disk-bar { height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-bottom: 14px; }
+.home-disk-bar { height: 10px; background: #FFF; border-radius: 5px; overflow: hidden; margin-bottom: 14px; box-shadow: 3px 1px 7px rgba(0, 0, 0, 0.2); }
 .home-disk-bar-fill { height: 100%; border-radius: 5px; background: #3ba6f9; transition: width 0.5s, background 0.3s; }
 /* 颜色分级：<70% 基础蓝 / 70–90% 橙 / >90% 红 */
 .tier-ok { color: #3ba6f9; }
@@ -351,7 +351,10 @@ input, button, select, textarea { font-family: inherit; font-size: inherit; outl
 .dl-item-actions .dl-btn.dl-btn-cancel:hover { background: #fee2e2; color: #dc2626; }
 .dl-progress-track { height: 6px; background: #e5e7eb; border-radius: 3px; margin-top: 8px; overflow: hidden; }
 .dl-progress-fill { height: 100%; background: #f59e0b; border-radius: 3px; transition: width 0.2s; width: 0%; }
-.dl-item-meta { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: #6b7280; }
+.dl-item-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 6px; font-size: 11px; color: #6b7280; }
+/* meta 文本可长（"已收/总量 单位 · 速度 · ~ETA"）：窄屏优雅截断，不撑破布局 */
+.dl-item-meta span:first-child { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl-item-meta .dl-status { flex: 0 0 auto; white-space: nowrap; }
 .dl-status { font-weight: 600; }
 .dl-status.done { color: #10b981; }
 .dl-status.failed { color: #dc2626; }

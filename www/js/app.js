@@ -609,6 +609,19 @@ function getUploadTargetDir() {
   return dir;
 }
 
+// 格式化"剩余时间"（秒数 → 人类可读），供上传/下载 ETA 共用
+function formatEta(sec) {
+  if (!isFinite(sec) || sec < 0) return '';
+  sec = Math.round(sec);
+  if (sec < 60) return sec + 's';
+  var m = Math.floor(sec / 60), s = sec % 60;
+  if (m < 60) return m + 'm' + (s > 0 ? s + 's' : '');
+  var h = Math.floor(m / 60);
+  m = m % 60;
+  return h + 'h' + (m > 0 ? m + 'm' : '');
+}
+window.formatEta = formatEta;
+
 // 在指定 DOM 容器内启动一次上传（目标：queueEl/summaryEl，可选 dir）
 function startUpload(files, dir) {
   var token = getToken();
@@ -674,7 +687,12 @@ function startUpload(files, dir) {
     }
   }
 
-  function updateSummary() {
+  // immediate=true 立即刷新（单文件完成/批次推进）；immediate=false 节流 500ms（高频 onprogress 场景，避免文本闪烁）
+  function updateSummary(immediate) {
+    var now = Date.now();
+    if (immediate === undefined) immediate = true;
+    if (!immediate && uploadState._lastSummary && (now - uploadState._lastSummary) < 500) return;
+    uploadState._lastSummary = now;
     var c = window._uploadCounters;
     var totalAll = c.total;
     var doneAll = c.done;
@@ -743,21 +761,32 @@ function uploadOne(item, token, dir, uploadState, updateSummaryFn, callback) {
 
   var lastLoaded = 0;
   var lastTime = Date.now();
+  var smoothRate = 0;   // EMA 平滑速率
   xhr.upload.onprogress = function(e) {
-    if (e.lengthComputable) {
-      var now = Date.now();
-      var elapsed = (now - lastTime) / 1000;
-      if (elapsed > 0) {
-        var delta = e.loaded - lastLoaded;
-        uploadState.currentRate = delta / elapsed;
-        lastTime = now;
-        lastLoaded = e.loaded;
-      }
-      var pct = Math.round((e.loaded / e.total) * 100);
-      item.barEl.style.width = pct + '%';
-      item.statusEl.textContent = pct + '%';
-      updateSummaryFn();
+    if (!e.lengthComputable) return;
+    var now = Date.now();
+    // 进度条每次事件都更新（CSS 有 0.2s transition，平滑不闪烁）
+    var pct = Math.round((e.loaded / e.total) * 100);
+    item.barEl.style.width = pct + '%';
+
+    // 每 ~1s 采样一次速率（EMA 平滑）并刷新状态文本 / 汇总，
+    // 观感与左上角流量、下载定时器一致，避免旧手机上高频闪烁
+    if (now - lastTime < 1000) return;
+    var elapsed = (now - lastTime) / 1000;
+    var delta = e.loaded - lastLoaded;
+    var instRate = elapsed > 0 ? delta / elapsed : 0;
+    smoothRate = smoothRate === 0 ? instRate : smoothRate * 0.9 + instRate * 0.1;
+    uploadState.currentRate = smoothRate;
+    lastLoaded = e.loaded;
+    lastTime = now;
+
+    var statusText = pct + '%';
+    // 剩余时间提示：~ 前缀跨文化通用，硬编码在 JS，无需 i18n key
+    if (smoothRate > 0 && e.loaded < e.total) {
+      statusText += ' ~ ' + formatEta((e.total - e.loaded) / smoothRate);
     }
+    item.statusEl.textContent = statusText;
+    updateSummaryFn(false);
   };
 
   xhr.onload = function() {
@@ -2428,9 +2457,10 @@ function loadMyShares() {
       var shortId = encodeBase62(s.FShareID);
       var url = window.location.origin + window.location.pathname + '?s=' + shortId;
       var urlWithPwd = url + '&p=' + s.FPassword;
+      var pwdMeta = s.FPassword ? ' &middot; <span style="color:#22c55e;">' + escHtml(s.FPassword) + '</span>' : '';
       html += '<div class="share-item">' +
         '<div class="share-item-title"><a href="' + escAttr(urlWithPwd) + '" target="_blank" rel="noopener noreferrer">' + escHtml(s.FTitle) + '</a></div>' +
-        '<div class="share-item-meta">' + t('share.fileCount', { n: s.FFilesCount }) + ' &middot; ' + escHtml(s.FCreateTime || '') + '</div>' +
+        '<div class="share-item-meta">' + t('share.fileCount', { n: s.FFilesCount }) + ' &middot; ' + escHtml(s.FCreateTime || '') + pwdMeta + '</div>' +
         '<div class="share-item-actions">' +
           '<button class="share-action-btn share-btn-pwd" data-copy="' + escAttr(s.FPassword) + '" data-toast="toast.copyPwdSuccess">' + t('share.copyPwd') + '</button>' +
           '<button class="share-action-btn share-btn-link" data-copy="' + escAttr(urlWithPwd) + '" data-toast="toast.copySuccess">' + t('share.copyUrl') + '</button>' +
@@ -2501,10 +2531,12 @@ function loadAdminShares() {
       var shortId = encodeBase62(s.FShareID);
       var url = window.location.origin + window.location.pathname + '?s=' + shortId;
       var urlWithPwd = url + '&p=' + s.FPassword;
+      var pwdMeta = s.FPassword ? ' &middot; <span style="color:#22c55e;">' + escHtml(s.FPassword) + '</span>' : '';
       html += '<div class="share-item">' +
         '<div class="share-item-title"><a href="' + escAttr(urlWithPwd) + '" target="_blank" rel="noopener noreferrer">' + escHtml(s.FTitle) + '</a> <span style="color:#6b7280;font-weight:400;">@' + escHtml(s.FNickname) + ' (' + escHtml(s.FUsername) + ')</span></div>' +
-        '<div class="share-item-meta">' + t('share.fileCount', { n: s.FFilesCount }) + ' &middot; ' + escHtml(s.FCreateTime || '') + ' &middot; <span style="color:#22c55e;">' + escHtml(s.FPassword) + '</span></div>' +
+        '<div class="share-item-meta">' + t('share.fileCount', { n: s.FFilesCount }) + ' &middot; ' + escHtml(s.FCreateTime || '') + pwdMeta + '</div>' +
         '<div class="share-item-actions">' +
+          '<button class="share-action-btn share-btn-pwd" data-copy="' + escAttr(s.FPassword) + '" data-toast="toast.copyPwdSuccess">' + t('share.copyPwd') + '</button>' +
           '<button class="share-action-btn share-btn-link" data-copy="' + escAttr(urlWithPwd) + '" data-toast="toast.copySuccess">' + t('share.copyUrl') + '</button>' +
           '<button class="share-action-btn share-btn-del" onclick="deleteShare(\'' + s.FShareID + '\', \'' + escAttr(s.FTitle) + '\', true)">' + t('dialog.delete') + '</button>' +
           '<button class="share-action-btn share-btn-qr" onclick="showQrDialog(\'' + escAttr(urlWithPwd) + '\', \'' + escAttr(s.FTitle) + '\')">' + t('share.qr') + '</button>' +
@@ -3202,10 +3234,11 @@ function loadAdminUsers() {
         var quotaBytes = u.FQuota * 1048576; // MB to bytes
         usedPercent = (u.FUsedSpace || 0) / quotaBytes;
       }
-      var diskColor = '#22c55e';
-      if (usedPercent >= 0.66) diskColor = '#ef4444';
-      else if (usedPercent >= 0.5) diskColor = '#f97316';
-      else if (usedPercent >= 0.33) diskColor = '#22c55e';
+      // 与首页存储容量卡片分级条件一致：>90 danger / >=70 warn / 其余 ok
+      var usedPct = usedPercent * 100;
+      var diskColor = '#3ba6f9';
+      if (usedPct > 90) diskColor = '#ef4444';
+      else if (usedPct >= 70) diskColor = '#f59e0b';
       html += '<div class="user-item">' +
         '<div class="user-avatar">' + (u.FUsername || '?').charAt(0).toUpperCase() + '</div>' +
         '<div class="user-info">' +
@@ -4291,9 +4324,62 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
   }
   window.dlFmtBytes = dlFmtBytes;
 
-  // 人类可读速度
+  // 紧凑 "已收/总量" 形式：以总量为单位基准，两者共用同一单位 → "12.5/50 MB"、"45/512 KB"
+  // total 未知(<=0)时退化为只显示已收字节
+  // 紧凑 "已收 / 总量" 形式：收与总量各自按最优单位显示 → "12.5 KB / 50 MB"
+  // total 未知(<=0)时退化为只显示已收字节
+  function dlFmtPair(received, total) {
+    var units = ['B', 'KB', 'MB', 'GB'];
+    function pick(v) {
+      var i = 0;
+      while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+      return i;
+    }
+    function num(x, i) {
+      if (i === 0) return String(Math.round(x));
+      var s = x < 100 ? x.toFixed(1) : String(Math.round(x));
+      if (s.slice(-2) === '.0') s = s.slice(0, -2); // 去掉末尾 .0
+      return s;
+    }
+    if (total <= 0) return dlFmtBytes(received);
+    var ri = pick(received), ti = pick(total);
+    var r = received, t2 = total;
+    for (var k = 0; k < ri; k++) r /= 1024;
+    for (var k2 = 0; k2 < ti; k2++) t2 /= 1024;
+    return num(r, ri) + ' ' + units[ri] + ' / ' + num(t2, ti) + ' ' + units[ti];
+  }
+
+    // 人类可读速度（紧凑：单位与数值紧贴，如 2.3MB/s；<10 保留 1 位小数，避免 2.3→2 失真）
   function dlFmtSpeed(bps) {
-    return dlFmtBytes(bps) + '/s';
+    if (bps < 1024) return Math.round(bps) + ' B/s';
+    var u = ['KB', 'MB', 'GB'];
+    var v = bps / 1024;
+    var i = 0;
+    while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
+    return (v < 10 ? v.toFixed(1) : Math.round(v)) + ' ' + u[i] + '/s';
+  }
+
+  // 下载剩余时间提示（基于平滑速度估算；仅下载中状态有效）
+  function dlEtaText(task) {
+    if (!task || task.status !== 'downloading' || task.speed <= 0 || task.total <= task.received) return '';
+    return formatEta((task.total - task.received) / task.speed);
+  }
+
+  // 统一构造下载 meta 文本：紧凑 "已收/总量 单位 · 速度 ~ETA"
+  function dlMetaText(task) {
+    var st = task.status;
+    if (st === 'downloading') {
+      var s = dlFmtPair(task.received, task.total);
+      var eta = dlEtaText(task);
+      if (task.speed > 0 || eta) {
+        s += ' · ' + (task.speed > 0 ? dlFmtSpeed(task.speed) : '') +
+             (eta ? ' ~ ' + eta : '');
+      }
+      return s;
+    }
+    if (st === 'paused') return dlFmtPair(task.received, task.total);
+    if (st === 'done') return dlFmtBytes(task.total || task.received);
+    return '';
   }
 
   // 启动/追加下载任务（items: [{name, url}]）
@@ -4357,16 +4443,22 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
     task._abort = controller;
     var lastReceived = task.received;
     var lastTime = Date.now();
+    // EMA 平滑速度：定时器取样后做指数平滑，避免速度/ETA 文本频繁跳变闪烁
+    var smoothSpeed = 0;
 
     var speedTimer = setInterval(function() {
       if (task.status !== 'downloading') return;
       var now = Date.now();
       var dt = (now - lastTime) / 1000;
-      if (dt > 0) task.speed = (task.received - lastReceived) / dt;
+      if (dt > 0) {
+        var instSpeed = (task.received - lastReceived) / dt;
+        smoothSpeed = smoothSpeed === 0 ? instSpeed : smoothSpeed * 0.9 + instSpeed * 0.1;
+        task.speed = smoothSpeed;
+      }
       lastReceived = task.received;
       lastTime = now;
       dlPatchTask(task);
-    }, 300);
+    }, 1000);
 
     // 断点续传：已下载过部分则带 Range 头
     var headers = {};
@@ -4653,15 +4745,7 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
       else if (st === 'failed') { stLabel = t('dl.failed'); stCls = 'failed'; failedCount++; }
       else if (st === 'cancelled') { stLabel = t('dl.cancelled'); stCls = 'cancelled'; }
 
-      var metaText = '';
-      if (st === 'downloading') {
-        metaText = dlFmtBytes(task.received) + (task.total > 0 ? ' / ' + dlFmtBytes(task.total) : '') +
-          (task.speed > 0 ? ' · ' + dlFmtSpeed(task.speed) : '');
-      } else if (st === 'paused') {
-        metaText = dlFmtBytes(task.received) + (task.total > 0 ? ' / ' + dlFmtBytes(task.total) : '');
-      } else if (st === 'done') {
-        metaText = dlFmtBytes(task.total || task.received);
-      }
+      var metaText = dlMetaText(task);
 
       var actions = '';
       var xSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
@@ -4717,9 +4801,8 @@ document.getElementById('adminBrowseBtn').addEventListener('click', function() {
     var fill = document.getElementById('dlFill-' + task.id);
     if (fill) fill.style.width = pct + '%';
     var meta = document.getElementById('dlMeta-' + task.id);
-    if (meta && task.status === 'downloading') {
-      meta.textContent = dlFmtBytes(task.received) + (task.total > 0 ? ' / ' + dlFmtBytes(task.total) : '') +
-        (task.speed > 0 ? ' · ' + dlFmtSpeed(task.speed) : '');
+    if (meta && (task.status === 'downloading' || task.status === 'paused')) {
+      meta.textContent = dlMetaText(task);
     }
     var status = document.getElementById('dlStatus-' + task.id);
     if (status && task.status === 'downloading') {

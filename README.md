@@ -162,6 +162,12 @@ All endpoints return JSON: `{"code": 200, "msg": "...", "data": {...}}`
 
 > `+` add · `>` fix · `-` remove · `^` adjust
 
+### 1.15
+- `+` Estimated time remaining for uploads and downloads: the upload list shows `percent ~ETA` per line (e.g. `42% ~ 13s`), and the download task line shows `received / total · speed ~ETA` (e.g. `12.5 KB / 50 MB · 2.3 MB/s ~ 22s`; received and total are each shown in their own best-fit unit);
+- `^` Tuned the speed sampling rate: uploads now sample once per second instead of on every progress event, and the download speed timer was changed from 300ms to 1000ms; both use exponential moving average smoothing (factor 0.9) so the numbers no longer jitter;
+- `^` The upload summary line no longer repeats the ETA shown on each line; it keeps only "done/remaining count + current speed";
+- `^` The `~` prefix for estimated time is hardcoded in JS (a language-neutral symbol), so no updates to the 47 language files were needed.
+
 ### 1.14
 - `+` Replaced the home page "Upload Area" card with a "Storage" card: a horizontal progress bar shows the used percentage, with Used / Total / Free figures side by side below;
 - `+` The storage card includes a quick-actions row (Upload / Download / Files) so common actions are reachable without switching pages;
